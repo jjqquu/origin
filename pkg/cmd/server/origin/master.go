@@ -83,6 +83,8 @@ import (
 	useretcd "github.com/openshift/origin/pkg/user/registry/user/etcd"
 	"github.com/openshift/origin/pkg/user/registry/useridentitymapping"
 
+	siteetcd "github.com/openshift/origin/pkg/site/registry/site/etcd"
+
 	"github.com/openshift/origin/pkg/build/registry/buildclone"
 	"github.com/openshift/origin/pkg/build/registry/buildconfiginstantiate"
 
@@ -388,6 +390,8 @@ func (c *MasterConfig) GetRestStorage() map[string]rest.Storage {
 	identityRegistry := identityregistry.NewRegistry(identityStorage)
 	userIdentityMappingStorage := useridentitymapping.NewREST(userRegistry, identityRegistry)
 
+	siteStorage, siteStatusStorage := siteetcd.NewREST(c.EtcdHelper)
+
 	policyStorage := policyetcd.NewStorage(c.EtcdHelper)
 	policyRegistry := policyregistry.NewRegistry(policyStorage)
 	policyBindingStorage := policybindingetcd.NewStorage(c.EtcdHelper)
@@ -517,6 +521,9 @@ func (c *MasterConfig) GetRestStorage() map[string]rest.Storage {
 		"groups":               groupetcd.NewREST(c.EtcdHelper),
 		"identities":           identityStorage,
 		"userIdentityMappings": userIdentityMappingStorage,
+
+		"sites":        siteStorage,
+		"sites/status": siteStatusStorage,
 
 		"oAuthAuthorizeTokens":      authorizetokenetcd.NewREST(c.EtcdHelper),
 		"oAuthAccessTokens":         accesstokenetcd.NewREST(c.EtcdHelper),

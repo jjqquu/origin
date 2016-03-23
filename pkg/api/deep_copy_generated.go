@@ -10,6 +10,7 @@ import (
 	projectapi "github.com/openshift/origin/pkg/project/api"
 	routeapi "github.com/openshift/origin/pkg/route/api"
 	sdnapi "github.com/openshift/origin/pkg/sdn/api"
+	siteapi "github.com/openshift/origin/pkg/site/api"
 	templateapi "github.com/openshift/origin/pkg/template/api"
 	userapi "github.com/openshift/origin/pkg/user/api"
 	pkgapi "k8s.io/kubernetes/pkg/api"
@@ -3021,6 +3022,96 @@ func deepCopy_api_NetNamespaceList(in sdnapi.NetNamespaceList, out *sdnapi.NetNa
 	return nil
 }
 
+func deepCopy_api_Site(in siteapi.Site, out *siteapi.Site, c *conversion.Cloner) error {
+	if newVal, err := c.DeepCopy(in.TypeMeta); err != nil {
+		return err
+	} else {
+		out.TypeMeta = newVal.(unversioned.TypeMeta)
+	}
+	if newVal, err := c.DeepCopy(in.ObjectMeta); err != nil {
+		return err
+	} else {
+		out.ObjectMeta = newVal.(pkgapi.ObjectMeta)
+	}
+	if err := deepCopy_api_SiteSpec(in.Spec, &out.Spec, c); err != nil {
+		return err
+	}
+	if err := deepCopy_api_SiteStatus(in.Status, &out.Status, c); err != nil {
+		return err
+	}
+	return nil
+}
+
+func deepCopy_api_SiteAddress(in siteapi.SiteAddress, out *siteapi.SiteAddress, c *conversion.Cloner) error {
+	out.Url = in.Url
+	return nil
+}
+
+func deepCopy_api_SiteList(in siteapi.SiteList, out *siteapi.SiteList, c *conversion.Cloner) error {
+	if newVal, err := c.DeepCopy(in.TypeMeta); err != nil {
+		return err
+	} else {
+		out.TypeMeta = newVal.(unversioned.TypeMeta)
+	}
+	if newVal, err := c.DeepCopy(in.ListMeta); err != nil {
+		return err
+	} else {
+		out.ListMeta = newVal.(unversioned.ListMeta)
+	}
+	if in.Items != nil {
+		out.Items = make([]siteapi.Site, len(in.Items))
+		for i := range in.Items {
+			if err := deepCopy_api_Site(in.Items[i], &out.Items[i], c); err != nil {
+				return err
+			}
+		}
+	} else {
+		out.Items = nil
+	}
+	return nil
+}
+
+func deepCopy_api_SiteSpec(in siteapi.SiteSpec, out *siteapi.SiteSpec, c *conversion.Cloner) error {
+	out.Type = in.Type
+	if err := deepCopy_api_SiteAddress(in.Address, &out.Address, c); err != nil {
+		return err
+	}
+	if err := deepCopy_api_StringSource(in.Credential, &out.Credential, c); err != nil {
+		return err
+	}
+	if in.Finalizers != nil {
+		out.Finalizers = make([]pkgapi.FinalizerName, len(in.Finalizers))
+		for i := range in.Finalizers {
+			out.Finalizers[i] = in.Finalizers[i]
+		}
+	} else {
+		out.Finalizers = nil
+	}
+	return nil
+}
+
+func deepCopy_api_SiteStatus(in siteapi.SiteStatus, out *siteapi.SiteStatus, c *conversion.Cloner) error {
+	out.Phase = in.Phase
+	out.SiteMeta = in.SiteMeta
+	out.SiteAgentAddress = in.SiteAgentAddress
+	return nil
+}
+
+func deepCopy_api_StringSource(in siteapi.StringSource, out *siteapi.StringSource, c *conversion.Cloner) error {
+	if err := deepCopy_api_StringSourceSpec(in.StringSourceSpec, &out.StringSourceSpec, c); err != nil {
+		return err
+	}
+	return nil
+}
+
+func deepCopy_api_StringSourceSpec(in siteapi.StringSourceSpec, out *siteapi.StringSourceSpec, c *conversion.Cloner) error {
+	out.Value = in.Value
+	out.Env = in.Env
+	out.File = in.File
+	out.KeyFile = in.KeyFile
+	return nil
+}
+
 func deepCopy_api_Parameter(in templateapi.Parameter, out *templateapi.Parameter, c *conversion.Cloner) error {
 	out.Name = in.Name
 	out.DisplayName = in.DisplayName
@@ -3410,6 +3501,13 @@ func init() {
 		deepCopy_api_HostSubnetList,
 		deepCopy_api_NetNamespace,
 		deepCopy_api_NetNamespaceList,
+		deepCopy_api_Site,
+		deepCopy_api_SiteAddress,
+		deepCopy_api_SiteList,
+		deepCopy_api_SiteSpec,
+		deepCopy_api_SiteStatus,
+		deepCopy_api_StringSource,
+		deepCopy_api_StringSourceSpec,
 		deepCopy_api_Parameter,
 		deepCopy_api_Template,
 		deepCopy_api_TemplateList,

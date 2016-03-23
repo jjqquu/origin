@@ -18,6 +18,8 @@ import (
 	routeapiv1beta3 "github.com/openshift/origin/pkg/route/api/v1beta3"
 	sdnapi "github.com/openshift/origin/pkg/sdn/api"
 	sdnapiv1beta3 "github.com/openshift/origin/pkg/sdn/api/v1beta3"
+	siteapi "github.com/openshift/origin/pkg/site/api"
+	siteapiv1beta3 "github.com/openshift/origin/pkg/site/api/v1beta3"
 	templateapi "github.com/openshift/origin/pkg/template/api"
 	templateapiv1beta3 "github.com/openshift/origin/pkg/template/api/v1beta3"
 	userapi "github.com/openshift/origin/pkg/user/api"
@@ -4556,6 +4558,256 @@ func Convert_v1beta3_NetNamespaceList_To_api_NetNamespaceList(in *sdnapiv1beta3.
 	return autoConvert_v1beta3_NetNamespaceList_To_api_NetNamespaceList(in, out, s)
 }
 
+func autoConvert_api_Site_To_v1beta3_Site(in *siteapi.Site, out *siteapiv1beta3.Site, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*siteapi.Site))(in)
+	}
+	if err := Convert_api_ObjectMeta_To_v1beta3_ObjectMeta(&in.ObjectMeta, &out.ObjectMeta, s); err != nil {
+		return err
+	}
+	if err := Convert_api_SiteSpec_To_v1beta3_SiteSpec(&in.Spec, &out.Spec, s); err != nil {
+		return err
+	}
+	if err := Convert_api_SiteStatus_To_v1beta3_SiteStatus(&in.Status, &out.Status, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+func Convert_api_Site_To_v1beta3_Site(in *siteapi.Site, out *siteapiv1beta3.Site, s conversion.Scope) error {
+	return autoConvert_api_Site_To_v1beta3_Site(in, out, s)
+}
+
+func autoConvert_api_SiteAddress_To_v1beta3_SiteAddress(in *siteapi.SiteAddress, out *siteapiv1beta3.SiteAddress, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*siteapi.SiteAddress))(in)
+	}
+	out.Url = in.Url
+	return nil
+}
+
+func Convert_api_SiteAddress_To_v1beta3_SiteAddress(in *siteapi.SiteAddress, out *siteapiv1beta3.SiteAddress, s conversion.Scope) error {
+	return autoConvert_api_SiteAddress_To_v1beta3_SiteAddress(in, out, s)
+}
+
+func autoConvert_api_SiteList_To_v1beta3_SiteList(in *siteapi.SiteList, out *siteapiv1beta3.SiteList, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*siteapi.SiteList))(in)
+	}
+	if err := api.Convert_unversioned_ListMeta_To_unversioned_ListMeta(&in.ListMeta, &out.ListMeta, s); err != nil {
+		return err
+	}
+	if in.Items != nil {
+		out.Items = make([]siteapiv1beta3.Site, len(in.Items))
+		for i := range in.Items {
+			if err := Convert_api_Site_To_v1beta3_Site(&in.Items[i], &out.Items[i], s); err != nil {
+				return err
+			}
+		}
+	} else {
+		out.Items = nil
+	}
+	return nil
+}
+
+func Convert_api_SiteList_To_v1beta3_SiteList(in *siteapi.SiteList, out *siteapiv1beta3.SiteList, s conversion.Scope) error {
+	return autoConvert_api_SiteList_To_v1beta3_SiteList(in, out, s)
+}
+
+func autoConvert_api_SiteSpec_To_v1beta3_SiteSpec(in *siteapi.SiteSpec, out *siteapiv1beta3.SiteSpec, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*siteapi.SiteSpec))(in)
+	}
+	out.Type = siteapiv1beta3.SiteType(in.Type)
+	if err := Convert_api_SiteAddress_To_v1beta3_SiteAddress(&in.Address, &out.Address, s); err != nil {
+		return err
+	}
+	if err := Convert_api_StringSource_To_v1beta3_StringSource(&in.Credential, &out.Credential, s); err != nil {
+		return err
+	}
+	if in.Finalizers != nil {
+		out.Finalizers = make([]apiv1beta3.FinalizerName, len(in.Finalizers))
+		for i := range in.Finalizers {
+			out.Finalizers[i] = apiv1beta3.FinalizerName(in.Finalizers[i])
+		}
+	} else {
+		out.Finalizers = nil
+	}
+	return nil
+}
+
+func Convert_api_SiteSpec_To_v1beta3_SiteSpec(in *siteapi.SiteSpec, out *siteapiv1beta3.SiteSpec, s conversion.Scope) error {
+	return autoConvert_api_SiteSpec_To_v1beta3_SiteSpec(in, out, s)
+}
+
+func autoConvert_api_SiteStatus_To_v1beta3_SiteStatus(in *siteapi.SiteStatus, out *siteapiv1beta3.SiteStatus, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*siteapi.SiteStatus))(in)
+	}
+	out.Phase = siteapiv1beta3.SitePhase(in.Phase)
+	out.SiteMeta = in.SiteMeta
+	out.SiteAgentAddress = in.SiteAgentAddress
+	return nil
+}
+
+func Convert_api_SiteStatus_To_v1beta3_SiteStatus(in *siteapi.SiteStatus, out *siteapiv1beta3.SiteStatus, s conversion.Scope) error {
+	return autoConvert_api_SiteStatus_To_v1beta3_SiteStatus(in, out, s)
+}
+
+func autoConvert_api_StringSource_To_v1beta3_StringSource(in *siteapi.StringSource, out *siteapiv1beta3.StringSource, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*siteapi.StringSource))(in)
+	}
+	if err := Convert_api_StringSourceSpec_To_v1beta3_StringSourceSpec(&in.StringSourceSpec, &out.StringSourceSpec, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+func Convert_api_StringSource_To_v1beta3_StringSource(in *siteapi.StringSource, out *siteapiv1beta3.StringSource, s conversion.Scope) error {
+	return autoConvert_api_StringSource_To_v1beta3_StringSource(in, out, s)
+}
+
+func autoConvert_api_StringSourceSpec_To_v1beta3_StringSourceSpec(in *siteapi.StringSourceSpec, out *siteapiv1beta3.StringSourceSpec, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*siteapi.StringSourceSpec))(in)
+	}
+	out.Value = in.Value
+	out.Env = in.Env
+	out.File = in.File
+	out.KeyFile = in.KeyFile
+	return nil
+}
+
+func Convert_api_StringSourceSpec_To_v1beta3_StringSourceSpec(in *siteapi.StringSourceSpec, out *siteapiv1beta3.StringSourceSpec, s conversion.Scope) error {
+	return autoConvert_api_StringSourceSpec_To_v1beta3_StringSourceSpec(in, out, s)
+}
+
+func autoConvert_v1beta3_Site_To_api_Site(in *siteapiv1beta3.Site, out *siteapi.Site, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*siteapiv1beta3.Site))(in)
+	}
+	if err := Convert_v1beta3_ObjectMeta_To_api_ObjectMeta(&in.ObjectMeta, &out.ObjectMeta, s); err != nil {
+		return err
+	}
+	if err := Convert_v1beta3_SiteSpec_To_api_SiteSpec(&in.Spec, &out.Spec, s); err != nil {
+		return err
+	}
+	if err := Convert_v1beta3_SiteStatus_To_api_SiteStatus(&in.Status, &out.Status, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+func Convert_v1beta3_Site_To_api_Site(in *siteapiv1beta3.Site, out *siteapi.Site, s conversion.Scope) error {
+	return autoConvert_v1beta3_Site_To_api_Site(in, out, s)
+}
+
+func autoConvert_v1beta3_SiteAddress_To_api_SiteAddress(in *siteapiv1beta3.SiteAddress, out *siteapi.SiteAddress, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*siteapiv1beta3.SiteAddress))(in)
+	}
+	out.Url = in.Url
+	return nil
+}
+
+func Convert_v1beta3_SiteAddress_To_api_SiteAddress(in *siteapiv1beta3.SiteAddress, out *siteapi.SiteAddress, s conversion.Scope) error {
+	return autoConvert_v1beta3_SiteAddress_To_api_SiteAddress(in, out, s)
+}
+
+func autoConvert_v1beta3_SiteList_To_api_SiteList(in *siteapiv1beta3.SiteList, out *siteapi.SiteList, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*siteapiv1beta3.SiteList))(in)
+	}
+	if err := api.Convert_unversioned_ListMeta_To_unversioned_ListMeta(&in.ListMeta, &out.ListMeta, s); err != nil {
+		return err
+	}
+	if in.Items != nil {
+		out.Items = make([]siteapi.Site, len(in.Items))
+		for i := range in.Items {
+			if err := Convert_v1beta3_Site_To_api_Site(&in.Items[i], &out.Items[i], s); err != nil {
+				return err
+			}
+		}
+	} else {
+		out.Items = nil
+	}
+	return nil
+}
+
+func Convert_v1beta3_SiteList_To_api_SiteList(in *siteapiv1beta3.SiteList, out *siteapi.SiteList, s conversion.Scope) error {
+	return autoConvert_v1beta3_SiteList_To_api_SiteList(in, out, s)
+}
+
+func autoConvert_v1beta3_SiteSpec_To_api_SiteSpec(in *siteapiv1beta3.SiteSpec, out *siteapi.SiteSpec, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*siteapiv1beta3.SiteSpec))(in)
+	}
+	out.Type = siteapi.SiteType(in.Type)
+	if err := Convert_v1beta3_SiteAddress_To_api_SiteAddress(&in.Address, &out.Address, s); err != nil {
+		return err
+	}
+	if err := Convert_v1beta3_StringSource_To_api_StringSource(&in.Credential, &out.Credential, s); err != nil {
+		return err
+	}
+	if in.Finalizers != nil {
+		out.Finalizers = make([]api.FinalizerName, len(in.Finalizers))
+		for i := range in.Finalizers {
+			out.Finalizers[i] = api.FinalizerName(in.Finalizers[i])
+		}
+	} else {
+		out.Finalizers = nil
+	}
+	return nil
+}
+
+func Convert_v1beta3_SiteSpec_To_api_SiteSpec(in *siteapiv1beta3.SiteSpec, out *siteapi.SiteSpec, s conversion.Scope) error {
+	return autoConvert_v1beta3_SiteSpec_To_api_SiteSpec(in, out, s)
+}
+
+func autoConvert_v1beta3_SiteStatus_To_api_SiteStatus(in *siteapiv1beta3.SiteStatus, out *siteapi.SiteStatus, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*siteapiv1beta3.SiteStatus))(in)
+	}
+	out.Phase = siteapi.SitePhase(in.Phase)
+	out.SiteMeta = in.SiteMeta
+	out.SiteAgentAddress = in.SiteAgentAddress
+	return nil
+}
+
+func Convert_v1beta3_SiteStatus_To_api_SiteStatus(in *siteapiv1beta3.SiteStatus, out *siteapi.SiteStatus, s conversion.Scope) error {
+	return autoConvert_v1beta3_SiteStatus_To_api_SiteStatus(in, out, s)
+}
+
+func autoConvert_v1beta3_StringSource_To_api_StringSource(in *siteapiv1beta3.StringSource, out *siteapi.StringSource, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*siteapiv1beta3.StringSource))(in)
+	}
+	if err := Convert_v1beta3_StringSourceSpec_To_api_StringSourceSpec(&in.StringSourceSpec, &out.StringSourceSpec, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+func Convert_v1beta3_StringSource_To_api_StringSource(in *siteapiv1beta3.StringSource, out *siteapi.StringSource, s conversion.Scope) error {
+	return autoConvert_v1beta3_StringSource_To_api_StringSource(in, out, s)
+}
+
+func autoConvert_v1beta3_StringSourceSpec_To_api_StringSourceSpec(in *siteapiv1beta3.StringSourceSpec, out *siteapi.StringSourceSpec, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*siteapiv1beta3.StringSourceSpec))(in)
+	}
+	out.Value = in.Value
+	out.Env = in.Env
+	out.File = in.File
+	out.KeyFile = in.KeyFile
+	return nil
+}
+
+func Convert_v1beta3_StringSourceSpec_To_api_StringSourceSpec(in *siteapiv1beta3.StringSourceSpec, out *siteapi.StringSourceSpec, s conversion.Scope) error {
+	return autoConvert_v1beta3_StringSourceSpec_To_api_StringSourceSpec(in, out, s)
+}
+
 func autoConvert_api_Parameter_To_v1beta3_Parameter(in *templateapi.Parameter, out *templateapiv1beta3.Parameter, s conversion.Scope) error {
 	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
 		defaulting.(func(*templateapi.Parameter))(in)
@@ -6723,9 +6975,16 @@ func init() {
 		autoConvert_api_SecretBuildSource_To_v1beta3_SecretBuildSource,
 		autoConvert_api_SecretSpec_To_v1beta3_SecretSpec,
 		autoConvert_api_SecretVolumeSource_To_v1beta3_SecretVolumeSource,
+		autoConvert_api_SiteAddress_To_v1beta3_SiteAddress,
+		autoConvert_api_SiteList_To_v1beta3_SiteList,
+		autoConvert_api_SiteSpec_To_v1beta3_SiteSpec,
+		autoConvert_api_SiteStatus_To_v1beta3_SiteStatus,
+		autoConvert_api_Site_To_v1beta3_Site,
 		autoConvert_api_SourceBuildStrategy_To_v1beta3_SourceBuildStrategy,
 		autoConvert_api_SourceControlUser_To_v1beta3_SourceControlUser,
 		autoConvert_api_SourceRevision_To_v1beta3_SourceRevision,
+		autoConvert_api_StringSourceSpec_To_v1beta3_StringSourceSpec,
+		autoConvert_api_StringSource_To_v1beta3_StringSource,
 		autoConvert_api_SubjectAccessReviewResponse_To_v1beta3_SubjectAccessReviewResponse,
 		autoConvert_api_SubjectAccessReview_To_v1beta3_SubjectAccessReview,
 		autoConvert_api_TCPSocketAction_To_v1beta3_TCPSocketAction,
@@ -6864,9 +7123,16 @@ func init() {
 		autoConvert_v1beta3_SecretBuildSource_To_api_SecretBuildSource,
 		autoConvert_v1beta3_SecretSpec_To_api_SecretSpec,
 		autoConvert_v1beta3_SecretVolumeSource_To_api_SecretVolumeSource,
+		autoConvert_v1beta3_SiteAddress_To_api_SiteAddress,
+		autoConvert_v1beta3_SiteList_To_api_SiteList,
+		autoConvert_v1beta3_SiteSpec_To_api_SiteSpec,
+		autoConvert_v1beta3_SiteStatus_To_api_SiteStatus,
+		autoConvert_v1beta3_Site_To_api_Site,
 		autoConvert_v1beta3_SourceBuildStrategy_To_api_SourceBuildStrategy,
 		autoConvert_v1beta3_SourceControlUser_To_api_SourceControlUser,
 		autoConvert_v1beta3_SourceRevision_To_api_SourceRevision,
+		autoConvert_v1beta3_StringSourceSpec_To_api_StringSourceSpec,
+		autoConvert_v1beta3_StringSource_To_api_StringSource,
 		autoConvert_v1beta3_SubjectAccessReviewResponse_To_api_SubjectAccessReviewResponse,
 		autoConvert_v1beta3_SubjectAccessReview_To_api_SubjectAccessReview,
 		autoConvert_v1beta3_TCPSocketAction_To_api_TCPSocketAction,

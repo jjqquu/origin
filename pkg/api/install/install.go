@@ -14,6 +14,7 @@ import (
 	_ "github.com/openshift/origin/pkg/project/api/install"
 	_ "github.com/openshift/origin/pkg/route/api/install"
 	_ "github.com/openshift/origin/pkg/sdn/api/install"
+	_ "github.com/openshift/origin/pkg/site/api/install"
 	_ "github.com/openshift/origin/pkg/template/api/install"
 	_ "github.com/openshift/origin/pkg/user/api/install"
 )

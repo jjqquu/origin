@@ -176,6 +176,11 @@ func (c *Fake) DeploymentLogs(namespace string) client.DeploymentLogInterface {
 	return &FakeDeploymentLogs{Fake: c, Namespace: namespace}
 }
 
+// Sites provides a fake REST client for Sites
+func (c *Fake) Sites(namespace string) client.SiteInterface {
+	return &FakeSites{Fake: c, Namespace: namespace}
+}
+
 // Routes provides a fake REST client for Routes
 func (c *Fake) Routes(namespace string) client.RouteInterface {
 	return &FakeRoutes{Fake: c, Namespace: namespace}

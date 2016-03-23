@@ -11,6 +11,7 @@ import (
 	projectvalidation "github.com/openshift/origin/pkg/project/api/validation"
 	routevalidation "github.com/openshift/origin/pkg/route/api/validation"
 	sdnvalidation "github.com/openshift/origin/pkg/sdn/api/validation"
+	sitevalidation "github.com/openshift/origin/pkg/site/api/validation"
 	templatevalidation "github.com/openshift/origin/pkg/template/api/validation"
 	uservalidation "github.com/openshift/origin/pkg/user/api/validation"
 	extvalidation "k8s.io/kubernetes/pkg/apis/extensions/validation"
@@ -23,6 +24,7 @@ import (
 	projectapi "github.com/openshift/origin/pkg/project/api"
 	routeapi "github.com/openshift/origin/pkg/route/api"
 	sdnapi "github.com/openshift/origin/pkg/sdn/api"
+	siteapi "github.com/openshift/origin/pkg/site/api"
 	templateapi "github.com/openshift/origin/pkg/template/api"
 	userapi "github.com/openshift/origin/pkg/user/api"
 	"k8s.io/kubernetes/pkg/apis/extensions"
@@ -76,6 +78,8 @@ func registerAll() {
 	Validator.MustRegister(&projectapi.ProjectRequest{}, projectvalidation.ValidateProjectRequest, nil)
 
 	Validator.MustRegister(&routeapi.Route{}, routevalidation.ValidateRoute, routevalidation.ValidateRouteUpdate)
+
+	Validator.MustRegister(&siteapi.Site{}, sitevalidation.ValidateSite, sitevalidation.ValidateSiteUpdate)
 
 	Validator.MustRegister(&sdnapi.ClusterNetwork{}, sdnvalidation.ValidateClusterNetwork, sdnvalidation.ValidateClusterNetworkUpdate)
 	Validator.MustRegister(&sdnapi.HostSubnet{}, sdnvalidation.ValidateHostSubnet, sdnvalidation.ValidateHostSubnetUpdate)

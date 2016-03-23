@@ -3,18 +3,6 @@ package api
 import (
 	"k8s.io/kubernetes/pkg/api/unversioned"
 	"k8s.io/kubernetes/pkg/runtime"
-
-	_ "github.com/openshift/origin/pkg/authorization/api"
-	_ "github.com/openshift/origin/pkg/build/api"
-	_ "github.com/openshift/origin/pkg/deploy/api"
-	_ "github.com/openshift/origin/pkg/image/api"
-	_ "github.com/openshift/origin/pkg/oauth/api"
-	_ "github.com/openshift/origin/pkg/project/api"
-	_ "github.com/openshift/origin/pkg/route/api"
-	_ "github.com/openshift/origin/pkg/sdn/api"
-	_ "github.com/openshift/origin/pkg/site/api"
-	_ "github.com/openshift/origin/pkg/template/api"
-	_ "github.com/openshift/origin/pkg/user/api"
 )
 
 const GroupName = ""
@@ -31,3 +19,19 @@ func Kind(kind string) unversioned.GroupKind {
 func Resource(resource string) unversioned.GroupResource {
 	return SchemeGroupVersion.WithResource(resource).GroupResource()
 }
+
+func AddToScheme(scheme *runtime.Scheme) {
+	// Add the API to Scheme.
+	addKnownTypes(scheme)
+}
+
+// Adds the list of known types to api.Scheme.
+func addKnownTypes(scheme *runtime.Scheme) {
+	scheme.AddKnownTypes(SchemeGroupVersion,
+		&Site{},
+		&SiteList{},
+	)
+}
+
+func (obj *Site) GetObjectKind() unversioned.ObjectKind     { return &obj.TypeMeta }
+func (obj *SiteList) GetObjectKind() unversioned.ObjectKind { return &obj.TypeMeta }
