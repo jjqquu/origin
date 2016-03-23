@@ -1,0 +1,1 @@
+Sites are the cluster to be managed by OpenShift. 
