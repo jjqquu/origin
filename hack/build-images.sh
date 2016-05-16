@@ -112,6 +112,7 @@ image openshift/origin-docker-builder        images/builder/docker/docker-builde
 image openshift/origin-gitserver             examples/gitserver
 image openshift/origin-sti-builder           images/builder/docker/sti-builder
 image openshift/origin-f5-router             images/router/f5
+image openshift/origin-siteagent             images/siteagent
 image openshift/node                         images/node
 # unpublished images
 image openshift/origin-custom-docker-builder images/builder/docker/custom-docker-builder

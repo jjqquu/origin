@@ -1,0 +1,61 @@
+# This is the official OpenShift Origin image. It has as its entrypoint the OpenShift
+# all-in-one binary.
+#
+# While this image can be used for a simple node it does not support OVS based
+# SDN or storage plugins required for EBS, GCE, Gluster, Ceph, or iSCSI volume
+# management. For those features please use 'openshift/node' 
+#
+# The standard name for this image is openshift/origin
+#
+FROM openshift/origin-base
+
+# gcc for cgo
+RUN yum -y install \
+	g++ \ 
+	gcc \ 
+	gdb \ 
+	libc6-dev \ 
+	git \ 
+	make \ 
+	&& yum clean all
+
+ENV GOLANG_VERSION 1.6
+ENV GOLANG_DOWNLOAD_URL https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz
+ENV GOLANG_DOWNLOAD_SHA256 5470eac05d273c74ff8bac7bef5bad0b5abbd1c4052efbdbc8db45332e836b0b
+
+# RUN curl -fsSL "$GOLANG_DOWNLOAD_URL" -o golang.tar.gz \
+RUN  wget --retry-connrefused --waitretry=1 --read-timeout=20 --timeout=15 -t 0 "$GOLANG_DOWNLOAD_URL" -O golang.tar.gz \
+	&& echo "$GOLANG_DOWNLOAD_SHA256  golang.tar.gz" | sha256sum -c - \
+	&& tar -C /usr/local -xzf golang.tar.gz \
+	&& rm golang.tar.gz
+
+ENV GOPATH /go
+ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
+
+RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH" 
+
+# install diagnosis utilities
+RUN yum -y install deltarpm unzip net-tools telnet lsof ntop tcpdump traceroute bind-utils openssh-server openssh-clients wget which
+
+RUN mkdir -p /var/lib/origin
+
+ADD bin/openshift /usr/bin/openshift
+RUN ln -s /usr/bin/openshift /usr/bin/oc && \
+    ln -s /usr/bin/openshift /usr/bin/oadm && \
+    ln -s /usr/bin/openshift /usr/bin/osc && \
+    ln -s /usr/bin/openshift /usr/bin/osadm && \
+    ln -s /usr/bin/openshift /usr/bin/kubectl && \
+    ln -s /usr/bin/openshift /usr/bin/openshift-siteagent && \
+    ln -s /usr/bin/openshift /usr/bin/openshift-deploy && \
+    ln -s /usr/bin/openshift /usr/bin/openshift-docker-build && \
+    ln -s /usr/bin/openshift /usr/bin/openshift-sti-build && \
+    ln -s /usr/bin/openshift /usr/bin/openshift-f5-router && \
+    setcap 'cap_net_bind_service=ep' /usr/bin/openshift
+
+ENV TERM xterm
+ENV HOME /root
+ENV OPENSHIFT_CONTAINERIZED true
+ENV KUBECONFIG /var/lib/origin/openshift.local.config/master/admin.kubeconfig
+WORKDIR /var/lib/origin
+EXPOSE 8443 53
+ENTRYPOINT ["/usr/bin/openshift"]

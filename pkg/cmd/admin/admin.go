@@ -16,6 +16,7 @@ import (
 	"github.com/openshift/origin/pkg/cmd/admin/prune"
 	"github.com/openshift/origin/pkg/cmd/admin/registry"
 	"github.com/openshift/origin/pkg/cmd/admin/router"
+	"github.com/openshift/origin/pkg/cmd/admin/siteagent"
 	"github.com/openshift/origin/pkg/cmd/cli/cmd"
 	"github.com/openshift/origin/pkg/cmd/experimental/buildchain"
 	exipfailover "github.com/openshift/origin/pkg/cmd/experimental/ipfailover"
@@ -56,6 +57,7 @@ func NewCommandAdmin(name, fullName string, out io.Writer, errout io.Writer) *co
 			Message: "Install Commands:",
 			Commands: []*cobra.Command{
 				router.NewCmdRouter(f, fullName, "router", out),
+				siteagent.NewCmdSiteAgent(f, fullName, "siteagent", out),
 				exipfailover.NewCmdIPFailoverConfig(f, fullName, "ipfailover", out),
 				registry.NewCmdRegistry(f, fullName, "registry", out),
 			},

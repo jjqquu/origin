@@ -390,7 +390,15 @@ func (c *MasterConfig) GetRestStorage() map[string]rest.Storage {
 	identityRegistry := identityregistry.NewRegistry(identityStorage)
 	userIdentityMappingStorage := useridentitymapping.NewREST(userRegistry, identityRegistry)
 
-	siteStorage, siteStatusStorage := siteetcd.NewREST(c.EtcdHelper)
+	siteProxyTransport, err := restclient.TransportFor(&restclient.Config{})
+	if err != nil {
+		glog.Fatalf("Unable to configure a default transport for importing: %v", err)
+	}
+	insecureSiteProxyTransport, err := restclient.TransportFor(&restclient.Config{Insecure: true})
+	if err != nil {
+		glog.Fatalf("Unable to configure a default transport for talking to site agent: %v", err)
+	}
+	siteStorage, siteStatusStorage, siteProxy := siteetcd.NewREST(c.EtcdHelper, siteProxyTransport, insecureSiteProxyTransport)
 
 	policyStorage := policyetcd.NewStorage(c.EtcdHelper)
 	policyRegistry := policyregistry.NewRegistry(policyStorage)
@@ -524,6 +532,7 @@ func (c *MasterConfig) GetRestStorage() map[string]rest.Storage {
 
 		"sites":        siteStorage,
 		"sites/status": siteStatusStorage,
+		"sites/proxy":  siteProxy,
 
 		"oAuthAuthorizeTokens":      authorizetokenetcd.NewREST(c.EtcdHelper),
 		"oAuthAccessTokens":         accesstokenetcd.NewREST(c.EtcdHelper),

@@ -20,6 +20,7 @@ import (
 	"github.com/openshift/origin/pkg/cmd/infra/builder"
 	"github.com/openshift/origin/pkg/cmd/infra/deployer"
 	irouter "github.com/openshift/origin/pkg/cmd/infra/router"
+	"github.com/openshift/origin/pkg/cmd/infra/siteagent"
 	"github.com/openshift/origin/pkg/cmd/server/start"
 	"github.com/openshift/origin/pkg/cmd/server/start/kubernetes"
 	"github.com/openshift/origin/pkg/cmd/templates"
@@ -56,6 +57,8 @@ func CommandFor(basename string) *cobra.Command {
 		cmd = irouter.NewCommandTemplateRouter(basename)
 	case "openshift-f5-router":
 		cmd = irouter.NewCommandF5Router(basename)
+	case "openshift-siteagent":
+		cmd = siteagent.NewCommandSiteAgent(basename)
 	case "openshift-deploy":
 		cmd = deployer.NewCommandDeployer(basename)
 	case "openshift-sti-build":
@@ -122,6 +125,7 @@ func NewCommandOpenShift(name string) *cobra.Command {
 	infra.AddCommand(
 		irouter.NewCommandTemplateRouter("router"),
 		irouter.NewCommandF5Router("f5-router"),
+		siteagent.NewCommandSiteAgent("siteagent"),
 		deployer.NewCommandDeployer("deploy"),
 		builder.NewCommandSTIBuilder("sti-build"),
 		builder.NewCommandDockerBuilder("docker-build"),
