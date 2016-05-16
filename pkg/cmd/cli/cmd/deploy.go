@@ -267,6 +267,10 @@ func (o DeployOptions) retry(config *deployapi.DeploymentConfig, out io.Writer) 
 		}
 	}
 
+	if config.Spec.MarathonAppTemplate != nil {
+		deployment.Annotations[deployapi.DeploymentMarathonRetryAnnotation] = strconv.Itoa(config.Status.LatestVersion)
+	}
+
 	deployment.Annotations[deployapi.DeploymentStatusAnnotation] = string(deployapi.DeploymentStatusNew)
 	// clear out the cancellation flag as well as any previous status-reason annotation
 	delete(deployment.Annotations, deployapi.DeploymentStatusReasonAnnotation)

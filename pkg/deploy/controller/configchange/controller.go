@@ -72,7 +72,13 @@ func (c *DeploymentConfigChangeController) Handle(config *deployapi.DeploymentCo
 	}
 
 	// Detect template diffs, and return early if there aren't any changes.
-	if kapi.Semantic.DeepEqual(config.Spec.Template, deployedConfig.Spec.Template) {
+	if config.Spec.Template != nil && kapi.Semantic.DeepEqual(config.Spec.Template, deployedConfig.Spec.Template) {
+		glog.V(5).Infof("Ignoring DeploymentConfig change for %s (latestVersion=%d); same as Deployment %s", deployutil.LabelForDeploymentConfig(config), config.Status.LatestVersion, deployutil.LabelForDeployment(deployment))
+		return nil
+	}
+
+	// Detect template diffs, and return early if there aren't any changes.
+	if config.Spec.MarathonAppTemplate != nil && kapi.Semantic.DeepEqual(config.Spec.MarathonAppTemplate, deployedConfig.Spec.MarathonAppTemplate) {
 		glog.V(5).Infof("Ignoring DeploymentConfig change for %s (latestVersion=%d); same as Deployment %s", deployutil.LabelForDeploymentConfig(config), config.Status.LatestVersion, deployutil.LabelForDeployment(deployment))
 		return nil
 	}

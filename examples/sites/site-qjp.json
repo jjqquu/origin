@@ -1,0 +1,27 @@
+{
+  "kind": "Site",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "qjp", 
+    "labels": {
+      "name": "hi"
+    },
+    "annotations": {
+      "openshift.io/description": "This is an example site to demonstrate OpenShift v3",
+      "openshift.io/display-name": "Hello OpenShift"
+    }
+  },
+  "spec": {
+    "type": "marathon",
+    "address": {
+      "url": "192.168.1.1"
+    },
+    "credential": {
+      "value": "passwordabc"
+    }
+  },
+  "status": {
+    "phase": "running",
+    "siteAgentAddress": "172.17.0.3:8080"
+  }
+}

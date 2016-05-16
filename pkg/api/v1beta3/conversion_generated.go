@@ -2680,6 +2680,347 @@ func Convert_api_DeploymentTriggerPolicy_To_v1beta3_DeploymentTriggerPolicy(in *
 	return autoConvert_api_DeploymentTriggerPolicy_To_v1beta3_DeploymentTriggerPolicy(in, out, s)
 }
 
+func autoConvert_api_MarathonApplication_To_v1beta3_MarathonApplication(in *deployapi.MarathonApplication, out *deployapiv1beta3.MarathonApplication, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*deployapi.MarathonApplication))(in)
+	}
+	out.ID = in.ID
+	if in.Cmd != nil {
+		out.Cmd = new(string)
+		*out.Cmd = *in.Cmd
+	} else {
+		out.Cmd = nil
+	}
+	// unable to generate simple pointer conversion for []string -> []string
+	if in.Args != nil {
+		if err := s.Convert(&in.Args, &out.Args, 0); err != nil {
+			return err
+		}
+	} else {
+		out.Args = nil
+	}
+	// unable to generate simple pointer conversion for [][]string -> [][]string
+	if in.Constraints != nil {
+		if err := s.Convert(&in.Constraints, &out.Constraints, 0); err != nil {
+			return err
+		}
+	} else {
+		out.Constraints = nil
+	}
+	// unable to generate simple pointer conversion for api.MarathonContainer -> v1beta3.MarathonContainer
+	if in.Container != nil {
+		out.Container = new(deployapiv1beta3.MarathonContainer)
+		if err := Convert_api_MarathonContainer_To_v1beta3_MarathonContainer(in.Container, out.Container, s); err != nil {
+			return err
+		}
+	} else {
+		out.Container = nil
+	}
+	out.CPUs = in.CPUs
+	if in.Disk != nil {
+		out.Disk = new(float64)
+		*out.Disk = *in.Disk
+	} else {
+		out.Disk = nil
+	}
+	// unable to generate simple pointer conversion for map[string]string -> map[string]string
+	if in.Env != nil {
+		if err := s.Convert(&in.Env, &out.Env, 0); err != nil {
+			return err
+		}
+	} else {
+		out.Env = nil
+	}
+	if in.Executor != nil {
+		out.Executor = new(string)
+		*out.Executor = *in.Executor
+	} else {
+		out.Executor = nil
+	}
+	// unable to generate simple pointer conversion for []api.MarathonHealthCheck -> []v1beta3.MarathonHealthCheck
+	if in.HealthChecks != nil {
+		if err := s.Convert(&in.HealthChecks, &out.HealthChecks, 0); err != nil {
+			return err
+		}
+	} else {
+		out.HealthChecks = nil
+	}
+	if in.Mem != nil {
+		out.Mem = new(float64)
+		*out.Mem = *in.Mem
+	} else {
+		out.Mem = nil
+	}
+	if in.Ports != nil {
+		out.Ports = make([]int, len(in.Ports))
+		for i := range in.Ports {
+			out.Ports[i] = in.Ports[i]
+		}
+	} else {
+		out.Ports = nil
+	}
+	if in.RequirePorts != nil {
+		out.RequirePorts = new(bool)
+		*out.RequirePorts = *in.RequirePorts
+	} else {
+		out.RequirePorts = nil
+	}
+	if in.BackoffSeconds != nil {
+		out.BackoffSeconds = new(float64)
+		*out.BackoffSeconds = *in.BackoffSeconds
+	} else {
+		out.BackoffSeconds = nil
+	}
+	if in.BackoffFactor != nil {
+		out.BackoffFactor = new(float64)
+		*out.BackoffFactor = *in.BackoffFactor
+	} else {
+		out.BackoffFactor = nil
+	}
+	if in.MaxLaunchDelaySeconds != nil {
+		out.MaxLaunchDelaySeconds = new(float64)
+		*out.MaxLaunchDelaySeconds = *in.MaxLaunchDelaySeconds
+	} else {
+		out.MaxLaunchDelaySeconds = nil
+	}
+	if in.Dependencies != nil {
+		out.Dependencies = make([]string, len(in.Dependencies))
+		for i := range in.Dependencies {
+			out.Dependencies[i] = in.Dependencies[i]
+		}
+	} else {
+		out.Dependencies = nil
+	}
+	out.User = in.User
+	// unable to generate simple pointer conversion for api.MarathonUpgradeStrategy -> v1beta3.MarathonUpgradeStrategy
+	if in.UpgradeStrategy != nil {
+		out.UpgradeStrategy = new(deployapiv1beta3.MarathonUpgradeStrategy)
+		if err := Convert_api_MarathonUpgradeStrategy_To_v1beta3_MarathonUpgradeStrategy(in.UpgradeStrategy, out.UpgradeStrategy, s); err != nil {
+			return err
+		}
+	} else {
+		out.UpgradeStrategy = nil
+	}
+	// unable to generate simple pointer conversion for []string -> []string
+	if in.Uris != nil {
+		if err := s.Convert(&in.Uris, &out.Uris, 0); err != nil {
+			return err
+		}
+	} else {
+		out.Uris = nil
+	}
+	// unable to generate simple pointer conversion for map[string]string -> map[string]string
+	if in.Labels != nil {
+		if err := s.Convert(&in.Labels, &out.Labels, 0); err != nil {
+			return err
+		}
+	} else {
+		out.Labels = nil
+	}
+	if in.AcceptedResourceRoles != nil {
+		out.AcceptedResourceRoles = make([]string, len(in.AcceptedResourceRoles))
+		for i := range in.AcceptedResourceRoles {
+			out.AcceptedResourceRoles[i] = in.AcceptedResourceRoles[i]
+		}
+	} else {
+		out.AcceptedResourceRoles = nil
+	}
+	if in.Fetch != nil {
+		out.Fetch = make([]deployapiv1beta3.MarathonFetch, len(in.Fetch))
+		for i := range in.Fetch {
+			if err := Convert_api_MarathonFetch_To_v1beta3_MarathonFetch(&in.Fetch[i], &out.Fetch[i], s); err != nil {
+				return err
+			}
+		}
+	} else {
+		out.Fetch = nil
+	}
+	return nil
+}
+
+func Convert_api_MarathonApplication_To_v1beta3_MarathonApplication(in *deployapi.MarathonApplication, out *deployapiv1beta3.MarathonApplication, s conversion.Scope) error {
+	return autoConvert_api_MarathonApplication_To_v1beta3_MarathonApplication(in, out, s)
+}
+
+func autoConvert_api_MarathonContainer_To_v1beta3_MarathonContainer(in *deployapi.MarathonContainer, out *deployapiv1beta3.MarathonContainer, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*deployapi.MarathonContainer))(in)
+	}
+	out.Type = in.Type
+	// unable to generate simple pointer conversion for api.MarathonDocker -> v1beta3.MarathonDocker
+	if in.Docker != nil {
+		out.Docker = new(deployapiv1beta3.MarathonDocker)
+		if err := Convert_api_MarathonDocker_To_v1beta3_MarathonDocker(in.Docker, out.Docker, s); err != nil {
+			return err
+		}
+	} else {
+		out.Docker = nil
+	}
+	// unable to generate simple pointer conversion for []api.MarathonVolume -> []v1beta3.MarathonVolume
+	if in.Volumes != nil {
+		if err := s.Convert(&in.Volumes, &out.Volumes, 0); err != nil {
+			return err
+		}
+	} else {
+		out.Volumes = nil
+	}
+	return nil
+}
+
+func Convert_api_MarathonContainer_To_v1beta3_MarathonContainer(in *deployapi.MarathonContainer, out *deployapiv1beta3.MarathonContainer, s conversion.Scope) error {
+	return autoConvert_api_MarathonContainer_To_v1beta3_MarathonContainer(in, out, s)
+}
+
+func autoConvert_api_MarathonDocker_To_v1beta3_MarathonDocker(in *deployapi.MarathonDocker, out *deployapiv1beta3.MarathonDocker, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*deployapi.MarathonDocker))(in)
+	}
+	if in.ForcePullImage != nil {
+		out.ForcePullImage = new(bool)
+		*out.ForcePullImage = *in.ForcePullImage
+	} else {
+		out.ForcePullImage = nil
+	}
+	out.Image = in.Image
+	out.Network = in.Network
+	// unable to generate simple pointer conversion for []api.MarathonParameters -> []v1beta3.MarathonParameters
+	if in.Parameters != nil {
+		if err := s.Convert(&in.Parameters, &out.Parameters, 0); err != nil {
+			return err
+		}
+	} else {
+		out.Parameters = nil
+	}
+	// unable to generate simple pointer conversion for []api.MarathonPortMapping -> []v1beta3.MarathonPortMapping
+	if in.PortMappings != nil {
+		if err := s.Convert(&in.PortMappings, &out.PortMappings, 0); err != nil {
+			return err
+		}
+	} else {
+		out.PortMappings = nil
+	}
+	if in.Privileged != nil {
+		out.Privileged = new(bool)
+		*out.Privileged = *in.Privileged
+	} else {
+		out.Privileged = nil
+	}
+	return nil
+}
+
+func Convert_api_MarathonDocker_To_v1beta3_MarathonDocker(in *deployapi.MarathonDocker, out *deployapiv1beta3.MarathonDocker, s conversion.Scope) error {
+	return autoConvert_api_MarathonDocker_To_v1beta3_MarathonDocker(in, out, s)
+}
+
+func autoConvert_api_MarathonFetch_To_v1beta3_MarathonFetch(in *deployapi.MarathonFetch, out *deployapiv1beta3.MarathonFetch, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*deployapi.MarathonFetch))(in)
+	}
+	out.URI = in.URI
+	out.Executable = in.Executable
+	out.Extract = in.Extract
+	out.Cache = in.Cache
+	return nil
+}
+
+func Convert_api_MarathonFetch_To_v1beta3_MarathonFetch(in *deployapi.MarathonFetch, out *deployapiv1beta3.MarathonFetch, s conversion.Scope) error {
+	return autoConvert_api_MarathonFetch_To_v1beta3_MarathonFetch(in, out, s)
+}
+
+func autoConvert_api_MarathonHealthCheck_To_v1beta3_MarathonHealthCheck(in *deployapi.MarathonHealthCheck, out *deployapiv1beta3.MarathonHealthCheck, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*deployapi.MarathonHealthCheck))(in)
+	}
+	if in.Command != nil {
+		out.Command = new(string)
+		*out.Command = *in.Command
+	} else {
+		out.Command = nil
+	}
+	if in.PortIndex != nil {
+		out.PortIndex = new(int)
+		*out.PortIndex = *in.PortIndex
+	} else {
+		out.PortIndex = nil
+	}
+	if in.Path != nil {
+		out.Path = new(string)
+		*out.Path = *in.Path
+	} else {
+		out.Path = nil
+	}
+	if in.MaxConsecutiveFailures != nil {
+		out.MaxConsecutiveFailures = new(int)
+		*out.MaxConsecutiveFailures = *in.MaxConsecutiveFailures
+	} else {
+		out.MaxConsecutiveFailures = nil
+	}
+	out.Protocol = in.Protocol
+	out.GracePeriodSeconds = in.GracePeriodSeconds
+	out.IntervalSeconds = in.IntervalSeconds
+	out.TimeoutSeconds = in.TimeoutSeconds
+	return nil
+}
+
+func Convert_api_MarathonHealthCheck_To_v1beta3_MarathonHealthCheck(in *deployapi.MarathonHealthCheck, out *deployapiv1beta3.MarathonHealthCheck, s conversion.Scope) error {
+	return autoConvert_api_MarathonHealthCheck_To_v1beta3_MarathonHealthCheck(in, out, s)
+}
+
+func autoConvert_api_MarathonParameters_To_v1beta3_MarathonParameters(in *deployapi.MarathonParameters, out *deployapiv1beta3.MarathonParameters, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*deployapi.MarathonParameters))(in)
+	}
+	out.Key = in.Key
+	out.Value = in.Value
+	return nil
+}
+
+func Convert_api_MarathonParameters_To_v1beta3_MarathonParameters(in *deployapi.MarathonParameters, out *deployapiv1beta3.MarathonParameters, s conversion.Scope) error {
+	return autoConvert_api_MarathonParameters_To_v1beta3_MarathonParameters(in, out, s)
+}
+
+func autoConvert_api_MarathonPortMapping_To_v1beta3_MarathonPortMapping(in *deployapi.MarathonPortMapping, out *deployapiv1beta3.MarathonPortMapping, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*deployapi.MarathonPortMapping))(in)
+	}
+	out.ContainerPort = in.ContainerPort
+	out.HostPort = in.HostPort
+	out.ServicePort = in.ServicePort
+	out.Protocol = in.Protocol
+	return nil
+}
+
+func Convert_api_MarathonPortMapping_To_v1beta3_MarathonPortMapping(in *deployapi.MarathonPortMapping, out *deployapiv1beta3.MarathonPortMapping, s conversion.Scope) error {
+	return autoConvert_api_MarathonPortMapping_To_v1beta3_MarathonPortMapping(in, out, s)
+}
+
+func autoConvert_api_MarathonUpgradeStrategy_To_v1beta3_MarathonUpgradeStrategy(in *deployapi.MarathonUpgradeStrategy, out *deployapiv1beta3.MarathonUpgradeStrategy, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*deployapi.MarathonUpgradeStrategy))(in)
+	}
+	out.MinimumHealthCapacity = in.MinimumHealthCapacity
+	out.MaximumOverCapacity = in.MaximumOverCapacity
+	return nil
+}
+
+func Convert_api_MarathonUpgradeStrategy_To_v1beta3_MarathonUpgradeStrategy(in *deployapi.MarathonUpgradeStrategy, out *deployapiv1beta3.MarathonUpgradeStrategy, s conversion.Scope) error {
+	return autoConvert_api_MarathonUpgradeStrategy_To_v1beta3_MarathonUpgradeStrategy(in, out, s)
+}
+
+func autoConvert_api_MarathonVolume_To_v1beta3_MarathonVolume(in *deployapi.MarathonVolume, out *deployapiv1beta3.MarathonVolume, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*deployapi.MarathonVolume))(in)
+	}
+	out.ContainerPath = in.ContainerPath
+	out.HostPath = in.HostPath
+	out.Mode = in.Mode
+	return nil
+}
+
+func Convert_api_MarathonVolume_To_v1beta3_MarathonVolume(in *deployapi.MarathonVolume, out *deployapiv1beta3.MarathonVolume, s conversion.Scope) error {
+	return autoConvert_api_MarathonVolume_To_v1beta3_MarathonVolume(in, out, s)
+}
+
 func autoConvert_api_RollingDeploymentStrategyParams_To_v1beta3_RollingDeploymentStrategyParams(in *deployapi.RollingDeploymentStrategyParams, out *deployapiv1beta3.RollingDeploymentStrategyParams, s conversion.Scope) error {
 	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
 		defaulting.(func(*deployapi.RollingDeploymentStrategyParams))(in)
@@ -2956,6 +3297,347 @@ func autoConvert_v1beta3_DeploymentTriggerPolicy_To_api_DeploymentTriggerPolicy(
 
 func Convert_v1beta3_DeploymentTriggerPolicy_To_api_DeploymentTriggerPolicy(in *deployapiv1beta3.DeploymentTriggerPolicy, out *deployapi.DeploymentTriggerPolicy, s conversion.Scope) error {
 	return autoConvert_v1beta3_DeploymentTriggerPolicy_To_api_DeploymentTriggerPolicy(in, out, s)
+}
+
+func autoConvert_v1beta3_MarathonApplication_To_api_MarathonApplication(in *deployapiv1beta3.MarathonApplication, out *deployapi.MarathonApplication, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*deployapiv1beta3.MarathonApplication))(in)
+	}
+	out.ID = in.ID
+	if in.Cmd != nil {
+		out.Cmd = new(string)
+		*out.Cmd = *in.Cmd
+	} else {
+		out.Cmd = nil
+	}
+	// unable to generate simple pointer conversion for []string -> []string
+	if in.Args != nil {
+		if err := s.Convert(&in.Args, &out.Args, 0); err != nil {
+			return err
+		}
+	} else {
+		out.Args = nil
+	}
+	// unable to generate simple pointer conversion for [][]string -> [][]string
+	if in.Constraints != nil {
+		if err := s.Convert(&in.Constraints, &out.Constraints, 0); err != nil {
+			return err
+		}
+	} else {
+		out.Constraints = nil
+	}
+	// unable to generate simple pointer conversion for v1beta3.MarathonContainer -> api.MarathonContainer
+	if in.Container != nil {
+		out.Container = new(deployapi.MarathonContainer)
+		if err := Convert_v1beta3_MarathonContainer_To_api_MarathonContainer(in.Container, out.Container, s); err != nil {
+			return err
+		}
+	} else {
+		out.Container = nil
+	}
+	out.CPUs = in.CPUs
+	if in.Disk != nil {
+		out.Disk = new(float64)
+		*out.Disk = *in.Disk
+	} else {
+		out.Disk = nil
+	}
+	// unable to generate simple pointer conversion for map[string]string -> map[string]string
+	if in.Env != nil {
+		if err := s.Convert(&in.Env, &out.Env, 0); err != nil {
+			return err
+		}
+	} else {
+		out.Env = nil
+	}
+	if in.Executor != nil {
+		out.Executor = new(string)
+		*out.Executor = *in.Executor
+	} else {
+		out.Executor = nil
+	}
+	// unable to generate simple pointer conversion for []v1beta3.MarathonHealthCheck -> []api.MarathonHealthCheck
+	if in.HealthChecks != nil {
+		if err := s.Convert(&in.HealthChecks, &out.HealthChecks, 0); err != nil {
+			return err
+		}
+	} else {
+		out.HealthChecks = nil
+	}
+	if in.Mem != nil {
+		out.Mem = new(float64)
+		*out.Mem = *in.Mem
+	} else {
+		out.Mem = nil
+	}
+	if in.Ports != nil {
+		out.Ports = make([]int, len(in.Ports))
+		for i := range in.Ports {
+			out.Ports[i] = in.Ports[i]
+		}
+	} else {
+		out.Ports = nil
+	}
+	if in.RequirePorts != nil {
+		out.RequirePorts = new(bool)
+		*out.RequirePorts = *in.RequirePorts
+	} else {
+		out.RequirePorts = nil
+	}
+	if in.BackoffSeconds != nil {
+		out.BackoffSeconds = new(float64)
+		*out.BackoffSeconds = *in.BackoffSeconds
+	} else {
+		out.BackoffSeconds = nil
+	}
+	if in.BackoffFactor != nil {
+		out.BackoffFactor = new(float64)
+		*out.BackoffFactor = *in.BackoffFactor
+	} else {
+		out.BackoffFactor = nil
+	}
+	if in.MaxLaunchDelaySeconds != nil {
+		out.MaxLaunchDelaySeconds = new(float64)
+		*out.MaxLaunchDelaySeconds = *in.MaxLaunchDelaySeconds
+	} else {
+		out.MaxLaunchDelaySeconds = nil
+	}
+	if in.Dependencies != nil {
+		out.Dependencies = make([]string, len(in.Dependencies))
+		for i := range in.Dependencies {
+			out.Dependencies[i] = in.Dependencies[i]
+		}
+	} else {
+		out.Dependencies = nil
+	}
+	out.User = in.User
+	// unable to generate simple pointer conversion for v1beta3.MarathonUpgradeStrategy -> api.MarathonUpgradeStrategy
+	if in.UpgradeStrategy != nil {
+		out.UpgradeStrategy = new(deployapi.MarathonUpgradeStrategy)
+		if err := Convert_v1beta3_MarathonUpgradeStrategy_To_api_MarathonUpgradeStrategy(in.UpgradeStrategy, out.UpgradeStrategy, s); err != nil {
+			return err
+		}
+	} else {
+		out.UpgradeStrategy = nil
+	}
+	// unable to generate simple pointer conversion for []string -> []string
+	if in.Uris != nil {
+		if err := s.Convert(&in.Uris, &out.Uris, 0); err != nil {
+			return err
+		}
+	} else {
+		out.Uris = nil
+	}
+	// unable to generate simple pointer conversion for map[string]string -> map[string]string
+	if in.Labels != nil {
+		if err := s.Convert(&in.Labels, &out.Labels, 0); err != nil {
+			return err
+		}
+	} else {
+		out.Labels = nil
+	}
+	if in.AcceptedResourceRoles != nil {
+		out.AcceptedResourceRoles = make([]string, len(in.AcceptedResourceRoles))
+		for i := range in.AcceptedResourceRoles {
+			out.AcceptedResourceRoles[i] = in.AcceptedResourceRoles[i]
+		}
+	} else {
+		out.AcceptedResourceRoles = nil
+	}
+	if in.Fetch != nil {
+		out.Fetch = make([]deployapi.MarathonFetch, len(in.Fetch))
+		for i := range in.Fetch {
+			if err := Convert_v1beta3_MarathonFetch_To_api_MarathonFetch(&in.Fetch[i], &out.Fetch[i], s); err != nil {
+				return err
+			}
+		}
+	} else {
+		out.Fetch = nil
+	}
+	return nil
+}
+
+func Convert_v1beta3_MarathonApplication_To_api_MarathonApplication(in *deployapiv1beta3.MarathonApplication, out *deployapi.MarathonApplication, s conversion.Scope) error {
+	return autoConvert_v1beta3_MarathonApplication_To_api_MarathonApplication(in, out, s)
+}
+
+func autoConvert_v1beta3_MarathonContainer_To_api_MarathonContainer(in *deployapiv1beta3.MarathonContainer, out *deployapi.MarathonContainer, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*deployapiv1beta3.MarathonContainer))(in)
+	}
+	out.Type = in.Type
+	// unable to generate simple pointer conversion for v1beta3.MarathonDocker -> api.MarathonDocker
+	if in.Docker != nil {
+		out.Docker = new(deployapi.MarathonDocker)
+		if err := Convert_v1beta3_MarathonDocker_To_api_MarathonDocker(in.Docker, out.Docker, s); err != nil {
+			return err
+		}
+	} else {
+		out.Docker = nil
+	}
+	// unable to generate simple pointer conversion for []v1beta3.MarathonVolume -> []api.MarathonVolume
+	if in.Volumes != nil {
+		if err := s.Convert(&in.Volumes, &out.Volumes, 0); err != nil {
+			return err
+		}
+	} else {
+		out.Volumes = nil
+	}
+	return nil
+}
+
+func Convert_v1beta3_MarathonContainer_To_api_MarathonContainer(in *deployapiv1beta3.MarathonContainer, out *deployapi.MarathonContainer, s conversion.Scope) error {
+	return autoConvert_v1beta3_MarathonContainer_To_api_MarathonContainer(in, out, s)
+}
+
+func autoConvert_v1beta3_MarathonDocker_To_api_MarathonDocker(in *deployapiv1beta3.MarathonDocker, out *deployapi.MarathonDocker, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*deployapiv1beta3.MarathonDocker))(in)
+	}
+	if in.ForcePullImage != nil {
+		out.ForcePullImage = new(bool)
+		*out.ForcePullImage = *in.ForcePullImage
+	} else {
+		out.ForcePullImage = nil
+	}
+	out.Image = in.Image
+	out.Network = in.Network
+	// unable to generate simple pointer conversion for []v1beta3.MarathonParameters -> []api.MarathonParameters
+	if in.Parameters != nil {
+		if err := s.Convert(&in.Parameters, &out.Parameters, 0); err != nil {
+			return err
+		}
+	} else {
+		out.Parameters = nil
+	}
+	// unable to generate simple pointer conversion for []v1beta3.MarathonPortMapping -> []api.MarathonPortMapping
+	if in.PortMappings != nil {
+		if err := s.Convert(&in.PortMappings, &out.PortMappings, 0); err != nil {
+			return err
+		}
+	} else {
+		out.PortMappings = nil
+	}
+	if in.Privileged != nil {
+		out.Privileged = new(bool)
+		*out.Privileged = *in.Privileged
+	} else {
+		out.Privileged = nil
+	}
+	return nil
+}
+
+func Convert_v1beta3_MarathonDocker_To_api_MarathonDocker(in *deployapiv1beta3.MarathonDocker, out *deployapi.MarathonDocker, s conversion.Scope) error {
+	return autoConvert_v1beta3_MarathonDocker_To_api_MarathonDocker(in, out, s)
+}
+
+func autoConvert_v1beta3_MarathonFetch_To_api_MarathonFetch(in *deployapiv1beta3.MarathonFetch, out *deployapi.MarathonFetch, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*deployapiv1beta3.MarathonFetch))(in)
+	}
+	out.URI = in.URI
+	out.Executable = in.Executable
+	out.Extract = in.Extract
+	out.Cache = in.Cache
+	return nil
+}
+
+func Convert_v1beta3_MarathonFetch_To_api_MarathonFetch(in *deployapiv1beta3.MarathonFetch, out *deployapi.MarathonFetch, s conversion.Scope) error {
+	return autoConvert_v1beta3_MarathonFetch_To_api_MarathonFetch(in, out, s)
+}
+
+func autoConvert_v1beta3_MarathonHealthCheck_To_api_MarathonHealthCheck(in *deployapiv1beta3.MarathonHealthCheck, out *deployapi.MarathonHealthCheck, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*deployapiv1beta3.MarathonHealthCheck))(in)
+	}
+	if in.Command != nil {
+		out.Command = new(string)
+		*out.Command = *in.Command
+	} else {
+		out.Command = nil
+	}
+	if in.PortIndex != nil {
+		out.PortIndex = new(int)
+		*out.PortIndex = *in.PortIndex
+	} else {
+		out.PortIndex = nil
+	}
+	if in.Path != nil {
+		out.Path = new(string)
+		*out.Path = *in.Path
+	} else {
+		out.Path = nil
+	}
+	if in.MaxConsecutiveFailures != nil {
+		out.MaxConsecutiveFailures = new(int)
+		*out.MaxConsecutiveFailures = *in.MaxConsecutiveFailures
+	} else {
+		out.MaxConsecutiveFailures = nil
+	}
+	out.Protocol = in.Protocol
+	out.GracePeriodSeconds = in.GracePeriodSeconds
+	out.IntervalSeconds = in.IntervalSeconds
+	out.TimeoutSeconds = in.TimeoutSeconds
+	return nil
+}
+
+func Convert_v1beta3_MarathonHealthCheck_To_api_MarathonHealthCheck(in *deployapiv1beta3.MarathonHealthCheck, out *deployapi.MarathonHealthCheck, s conversion.Scope) error {
+	return autoConvert_v1beta3_MarathonHealthCheck_To_api_MarathonHealthCheck(in, out, s)
+}
+
+func autoConvert_v1beta3_MarathonParameters_To_api_MarathonParameters(in *deployapiv1beta3.MarathonParameters, out *deployapi.MarathonParameters, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*deployapiv1beta3.MarathonParameters))(in)
+	}
+	out.Key = in.Key
+	out.Value = in.Value
+	return nil
+}
+
+func Convert_v1beta3_MarathonParameters_To_api_MarathonParameters(in *deployapiv1beta3.MarathonParameters, out *deployapi.MarathonParameters, s conversion.Scope) error {
+	return autoConvert_v1beta3_MarathonParameters_To_api_MarathonParameters(in, out, s)
+}
+
+func autoConvert_v1beta3_MarathonPortMapping_To_api_MarathonPortMapping(in *deployapiv1beta3.MarathonPortMapping, out *deployapi.MarathonPortMapping, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*deployapiv1beta3.MarathonPortMapping))(in)
+	}
+	out.ContainerPort = in.ContainerPort
+	out.HostPort = in.HostPort
+	out.ServicePort = in.ServicePort
+	out.Protocol = in.Protocol
+	return nil
+}
+
+func Convert_v1beta3_MarathonPortMapping_To_api_MarathonPortMapping(in *deployapiv1beta3.MarathonPortMapping, out *deployapi.MarathonPortMapping, s conversion.Scope) error {
+	return autoConvert_v1beta3_MarathonPortMapping_To_api_MarathonPortMapping(in, out, s)
+}
+
+func autoConvert_v1beta3_MarathonUpgradeStrategy_To_api_MarathonUpgradeStrategy(in *deployapiv1beta3.MarathonUpgradeStrategy, out *deployapi.MarathonUpgradeStrategy, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*deployapiv1beta3.MarathonUpgradeStrategy))(in)
+	}
+	out.MinimumHealthCapacity = in.MinimumHealthCapacity
+	out.MaximumOverCapacity = in.MaximumOverCapacity
+	return nil
+}
+
+func Convert_v1beta3_MarathonUpgradeStrategy_To_api_MarathonUpgradeStrategy(in *deployapiv1beta3.MarathonUpgradeStrategy, out *deployapi.MarathonUpgradeStrategy, s conversion.Scope) error {
+	return autoConvert_v1beta3_MarathonUpgradeStrategy_To_api_MarathonUpgradeStrategy(in, out, s)
+}
+
+func autoConvert_v1beta3_MarathonVolume_To_api_MarathonVolume(in *deployapiv1beta3.MarathonVolume, out *deployapi.MarathonVolume, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*deployapiv1beta3.MarathonVolume))(in)
+	}
+	out.ContainerPath = in.ContainerPath
+	out.HostPath = in.HostPath
+	out.Mode = in.Mode
+	return nil
+}
+
+func Convert_v1beta3_MarathonVolume_To_api_MarathonVolume(in *deployapiv1beta3.MarathonVolume, out *deployapi.MarathonVolume, s conversion.Scope) error {
+	return autoConvert_v1beta3_MarathonVolume_To_api_MarathonVolume(in, out, s)
 }
 
 func autoConvert_v1beta3_RollingDeploymentStrategyParams_To_api_RollingDeploymentStrategyParams(in *deployapiv1beta3.RollingDeploymentStrategyParams, out *deployapi.RollingDeploymentStrategyParams, s conversion.Scope) error {
@@ -6928,6 +7610,15 @@ func init() {
 		autoConvert_api_LocalObjectReference_To_v1beta3_LocalObjectReference,
 		autoConvert_api_LocalResourceAccessReview_To_v1beta3_LocalResourceAccessReview,
 		autoConvert_api_LocalSubjectAccessReview_To_v1beta3_LocalSubjectAccessReview,
+		autoConvert_api_MarathonApplication_To_v1beta3_MarathonApplication,
+		autoConvert_api_MarathonContainer_To_v1beta3_MarathonContainer,
+		autoConvert_api_MarathonDocker_To_v1beta3_MarathonDocker,
+		autoConvert_api_MarathonFetch_To_v1beta3_MarathonFetch,
+		autoConvert_api_MarathonHealthCheck_To_v1beta3_MarathonHealthCheck,
+		autoConvert_api_MarathonParameters_To_v1beta3_MarathonParameters,
+		autoConvert_api_MarathonPortMapping_To_v1beta3_MarathonPortMapping,
+		autoConvert_api_MarathonUpgradeStrategy_To_v1beta3_MarathonUpgradeStrategy,
+		autoConvert_api_MarathonVolume_To_v1beta3_MarathonVolume,
 		autoConvert_api_NFSVolumeSource_To_v1beta3_NFSVolumeSource,
 		autoConvert_api_NetNamespaceList_To_v1beta3_NetNamespaceList,
 		autoConvert_api_NetNamespace_To_v1beta3_NetNamespace,
@@ -7076,6 +7767,15 @@ func init() {
 		autoConvert_v1beta3_LocalObjectReference_To_api_LocalObjectReference,
 		autoConvert_v1beta3_LocalResourceAccessReview_To_api_LocalResourceAccessReview,
 		autoConvert_v1beta3_LocalSubjectAccessReview_To_api_LocalSubjectAccessReview,
+		autoConvert_v1beta3_MarathonApplication_To_api_MarathonApplication,
+		autoConvert_v1beta3_MarathonContainer_To_api_MarathonContainer,
+		autoConvert_v1beta3_MarathonDocker_To_api_MarathonDocker,
+		autoConvert_v1beta3_MarathonFetch_To_api_MarathonFetch,
+		autoConvert_v1beta3_MarathonHealthCheck_To_api_MarathonHealthCheck,
+		autoConvert_v1beta3_MarathonParameters_To_api_MarathonParameters,
+		autoConvert_v1beta3_MarathonPortMapping_To_api_MarathonPortMapping,
+		autoConvert_v1beta3_MarathonUpgradeStrategy_To_api_MarathonUpgradeStrategy,
+		autoConvert_v1beta3_MarathonVolume_To_api_MarathonVolume,
 		autoConvert_v1beta3_NFSVolumeSource_To_api_NFSVolumeSource,
 		autoConvert_v1beta3_NetNamespaceList_To_api_NetNamespaceList,
 		autoConvert_v1beta3_NetNamespace_To_api_NetNamespace,

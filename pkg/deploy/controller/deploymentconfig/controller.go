@@ -117,13 +117,34 @@ func (c *DeploymentConfigController) Handle(config *deployapi.DeploymentConfig) 
 		if !deployutil.IsTerminatedDeployment(latestDeployment) {
 			return nil
 		}
-		return c.reconcileDeployments(existingDeployments, config)
+		switch config.Spec.Strategy.Type {
+		case deployapi.DeploymentStrategyTypeMarathon:
+			return c.reconcileMarathonDeployments(existingDeployments, config)
+		default:
+			return c.reconcileDeployments(existingDeployments, config)
+		}
 	}
 	// No deployments are running and the latest deployment doesn't exist, so
 	// create the new deployment.
+	if config.Spec.Strategy.Type == deployapi.DeploymentStrategyTypeMarathon {
+		// if it's a remote marathon deployment, we set a dummy template
+		config.Spec.Template = deployutil.GetPodTemplatePlaceHolder(config)
+	}
 	deployment, err := deployutil.MakeDeployment(config, c.codec)
 	if err != nil {
 		return fatalError(fmt.Sprintf("couldn't make deployment from (potentially invalid) deployment config %s: %v", deployutil.LabelForDeploymentConfig(config), err))
+	}
+	if config.Spec.Strategy.Type == deployapi.DeploymentStrategyTypeMarathon {
+		// it's a remote marathon deployment, set deployment action accordingly
+		version, isScale := deployutil.DeploymentVersionOfMarathonScale(config)
+		if isScale && version == config.Status.LatestVersion {
+			deployment.Annotations[deployapi.DeploymentMarathonScaleAnnotation] = strconv.Itoa(version)
+		}
+
+		version, isReconcile := deployutil.DeploymentVersionOfMarathonReconcile(config)
+		if isReconcile && version == config.Status.LatestVersion {
+			deployment.Annotations[deployapi.DeploymentMarathonReconcileAnnotation] = strconv.Itoa(version)
+		}
 	}
 	created, err := c.kubeClient.ReplicationControllers(config.Namespace).Create(deployment)
 	if err != nil {
@@ -260,5 +281,100 @@ func (c *DeploymentConfigController) reconcileDeployments(existingDeployments *k
 			}
 		}
 	}
+	return nil
+}
+
+func (c *DeploymentConfigController) reconcileMarathonDeployments(existingDeployments *kapi.ReplicationControllerList, config *deployapi.DeploymentConfig) error {
+	glog.Info("reconciling marathon deployment")
+
+	latestIsDeployed, latestDeployment := deployutil.LatestDeploymentInfo(config, existingDeployments)
+	if !latestIsDeployed {
+		// We shouldn't be reconciling if the latest deployment hasn't been
+		// created; this is enforced on the calling side, but double checking
+		// can't hurt.
+		return nil
+	}
+	activeDeployment := deployutil.ActiveDeployment(config, existingDeployments)
+	activeDeploymentExists := activeDeployment != nil
+	activeDeploymentIsLatest := activeDeploymentExists && activeDeployment.Name == latestDeployment.Name
+
+	if activeDeploymentIsLatest {
+		// the latest deployment config was deployed sucessfully
+		glog.Info("reconciling marathon deployment: activeDeploymentIsLatest")
+
+		// the latest deployment is completed, therefore we just need to ask marathon to deploy again with
+		// updated replica number in the latest config
+		replicas, hasReplicas := deployutil.DeploymentReplicas(latestDeployment)
+
+		glog.Infof("reconciling marathon deployment: activeDeploymentIsLatest: (%v, %d, %d)", hasReplicas, replicas, config.Spec.Replicas)
+
+		if !hasReplicas || (hasReplicas && replicas != config.Spec.Replicas) {
+			config.Status.LatestVersion++
+			if config.Annotations == nil {
+				config.Annotations = make(map[string]string)
+			}
+			config.Annotations[deployapi.DeploymentMarathonScaleAnnotation] = strconv.Itoa(config.Status.LatestVersion)
+			_, err := c.osClient.DeploymentConfigs(config.Namespace).Update(config)
+			return err
+		} else {
+			return nil
+		}
+	} else {
+		// the latest deployment config failed
+
+		isDeploymentCancled := deployutil.IsDeploymentCancelled(latestDeployment)
+		configVersion, isDeploymentConfigCancled := deployutil.IsDeploymentConfigCancelled(config)
+		if isDeploymentCancled && isDeploymentConfigCancled && configVersion == config.Status.LatestVersion {
+			// if it was canceled, usually the deployment hangs because of permanent error e.g.g the unsatisfication
+			// of deployment constraint), then we rollback automatically,
+			if activeDeploymentExists {
+				glog.Info("reconciling marathon deployment: activeDeploymentExists")
+
+				// the latest deployment is failed but there exists a previously completed deployment
+				// we have to ask marathon to cancel latest deployment and rollback to that deployment
+				// Set up the rollback and generate a new rolled back config.
+				rollback := &deployapi.DeploymentConfigRollback{
+					Spec: deployapi.DeploymentConfigRollbackSpec{
+						From: kapi.ObjectReference{
+							Name: activeDeployment.Name,
+						},
+						IncludeTemplate:        true,
+						IncludeTriggers:        true,
+						IncludeStrategy:        true,
+						IncludeReplicationMeta: true,
+					},
+				}
+				newConfig, err := c.osClient.DeploymentConfigs(config.Namespace).Rollback(rollback)
+				if err != nil {
+					return err
+				}
+				if newConfig.Annotations == nil {
+					newConfig.Annotations = make(map[string]string)
+				}
+				newConfig.Annotations[deployapi.DeploymentMarathonReconcileAnnotation] = strconv.Itoa(newConfig.Status.LatestVersion)
+				_, err = c.osClient.DeploymentConfigs(config.Namespace).Update(newConfig)
+				return err
+			} else {
+				glog.Info("reconciling marathon deployment: other cases")
+
+				// none of previous deployments is sucessfuly.
+				// we have to ask marathon to cancel latest deployment
+				config.Status.LatestVersion++
+				if config.Annotations == nil {
+					config.Annotations = make(map[string]string)
+				}
+				config.Annotations[deployapi.DeploymentMarathonReconcileAnnotation] = strconv.Itoa(config.Status.LatestVersion)
+				_, err := c.osClient.DeploymentConfigs(config.Namespace).Update(config)
+				return err
+			}
+		} else {
+			// otherwise it's failed (usually caused by temporary error, e.g communcation failure or concurrent rejection from marathon),
+			// we leave the failed deployment as it's, and expect user to rollback manually or resume deployment by retrying it
+			glog.Info("reconciling marathon deployment: do nothing for failed deployment")
+
+			return nil
+		}
+	}
+
 	return nil
 }

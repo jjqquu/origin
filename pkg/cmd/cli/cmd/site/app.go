@@ -188,7 +188,7 @@ func (a AppUpdate) fromJsonFile(o *SiteOptions) {
 
 	appId := "/" + o.ProjectId + "/" + o.AppId
 	newApp.ID = appId //command argument overrides file content
-	updatedApp, e := a.client.Sites(o.Namespace).UpdateApplication(o.SiteId, o.ProjectId, o.AppId, newApp)
+	updatedApp, e := a.client.Sites(o.Namespace).UpdateApplication(o.SiteId, o.ProjectId, o.AppId, newApp, false)
 	Check(e == nil, "failed to get response: ", e)
 	fmt.Println(a.format.Format(updatedApp, a.Humanize))
 }
@@ -206,7 +206,7 @@ func (a AppUpdate) fromCLI(o *SiteOptions) {
 		newApp.CPUs = o.Cpu
 	}
 
-	updatedApp, e := a.client.Sites(o.Namespace).UpdateApplication(o.SiteId, o.ProjectId, o.AppId, newApp)
+	updatedApp, e := a.client.Sites(o.Namespace).UpdateApplication(o.SiteId, o.ProjectId, o.AppId, newApp, false)
 	Check(e == nil, "failed to get response: ", e)
 	fmt.Println(a.format.Format(updatedApp, a.Humanize))
 }

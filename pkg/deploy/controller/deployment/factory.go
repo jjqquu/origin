@@ -32,6 +32,8 @@ type DeploymentControllerFactory struct {
 	Environment []kapi.EnvVar
 	// DeployerImage specifies which Docker image can support the default strategies.
 	DeployerImage string
+	// MarathonDeployerImage specifies which Docker image can support deployment to site of marathon
+	MarathonDeployerImage string
 }
 
 // Create creates a DeploymentController.
@@ -155,6 +157,12 @@ func (factory *DeploymentControllerFactory) makeContainer(strategy *deployapi.De
 		}
 		return &kapi.Container{
 			Image: strategy.CustomParams.Image,
+			Env:   environment,
+		}, nil
+	case deployapi.DeploymentStrategyTypeMarathon:
+		// Use the factory-configured image.
+		return &kapi.Container{
+			Image: factory.MarathonDeployerImage,
 			Env:   environment,
 		}, nil
 	default:

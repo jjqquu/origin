@@ -54,6 +54,8 @@ const (
 	DeploymentStrategyTypeCustom DeploymentStrategyType = "Custom"
 	// DeploymentStrategyTypeRolling uses the Kubernetes RollingUpdater.
 	DeploymentStrategyTypeRolling DeploymentStrategyType = "Rolling"
+	// DeploymentStrategyTypeMarathon is to deploy to marathon site
+	DeploymentStrategyTypeMarathon DeploymentStrategyType = "Marathon"
 )
 
 // CustomDeploymentStrategyParams are the input to the Custom deployment strategy.
@@ -242,6 +244,16 @@ const (
 	MidHookPodSuffix = "hook-mid"
 	// PostHookPodSuffix is the suffix added to all post hook pods
 	PostHookPodSuffix = "hook-post"
+
+	// DeploymentMarathonRetryAnnotation indicates that the marathon deployment has been
+	// asked to retry and the annotation value is the deployment config version
+	DeploymentMarathonRetryAnnotation = "openshift.io/deployment.marathon.retry"
+	// DeploymentMarathonScaleAnnotation indicates that the marathon deployment has been
+	// asked to scale up/down and the annotation value is the deployment config version
+	DeploymentMarathonScaleAnnotation = "openshift.io/deployment.marathon.scale"
+	// DeploymentMarathonReconcileAnnotation indicates that the marathon deployment has been
+	// asked to reconciile and the annotation value is the deployment config version
+	DeploymentMarathonReconcileAnnotation = "openshift.io/deployment.marathon.reconcile"
 )
 
 // These constants represent the various reasons for cancelling a deployment
@@ -298,9 +310,16 @@ type DeploymentConfigSpec struct {
 	// Selector is a label query over pods that should match the Replicas count.
 	Selector map[string]string
 
+	// Site is the identifier that specifies the site where deployment will be conducted
+	Site string
+
 	// Template is the object that describes the pod that will be created if
 	// insufficient replicas are detected.
 	Template *kapi.PodTemplateSpec
+
+	// MarathonAppTemplate is the object that describes the application that will be created
+	// by mesos Marathon scheduler
+	MarathonAppTemplate *MarathonApplication
 }
 
 // DeploymentConfigStatus represents the current deployment state.
@@ -445,4 +464,93 @@ type DeploymentLogOptions struct {
 
 	// Version of the deployment for which to view logs.
 	Version *int64
+}
+
+// Application is the definition for an application in marathon
+type MarathonApplication struct {
+	ID                    string                   `json:"id,omitempty"`
+	Cmd                   *string                  `json:"cmd,omitempty"`
+	Args                  *[]string                `json:"args,omitempty"`
+	Constraints           *[][]string              `json:"constraints,omitempty"`
+	Container             *MarathonContainer       `json:"container,omitempty"`
+	CPUs                  float64                  `json:"cpus,omitempty"`
+	Disk                  *float64                 `json:"disk,omitempty"`
+	Env                   *map[string]string       `json:"env,omitempty"`
+	Executor              *string                  `json:"executor,omitempty"`
+	HealthChecks          *[]MarathonHealthCheck   `json:"healthChecks,omitempty"`
+	Mem                   *float64                 `json:"mem,omitempty"`
+	Ports                 []int                    `json:"ports"`
+	RequirePorts          *bool                    `json:"requirePorts,omitempty"`
+	BackoffSeconds        *float64                 `json:"backoffSeconds,omitempty"`
+	BackoffFactor         *float64                 `json:"backoffFactor,omitempty"`
+	MaxLaunchDelaySeconds *float64                 `json:"maxLaunchDelaySeconds,omitempty"`
+	Dependencies          []string                 `json:"dependencies"`
+	User                  string                   `json:"user,omitempty"`
+	UpgradeStrategy       *MarathonUpgradeStrategy `json:"upgradeStrategy,omitempty"`
+	Uris                  *[]string                `json:"uris"`
+	Labels                *map[string]string       `json:"labels,omitempty"`
+	AcceptedResourceRoles []string                 `json:"acceptedResourceRoles,omitempty"`
+	Fetch                 []MarathonFetch          `json:"fetch"`
+}
+
+// Container is the definition for a container type in marathon
+type MarathonContainer struct {
+	Type    string            `json:"type,omitempty"`
+	Docker  *MarathonDocker   `json:"docker,omitempty"`
+	Volumes *[]MarathonVolume `json:"volumes,omitempty"`
+}
+
+// Docker is the docker definition from a marathon application
+type MarathonDocker struct {
+	ForcePullImage *bool                  `json:"forcePullImage,omitempty"`
+	Image          string                 `json:"image,omitempty"`
+	Network        string                 `json:"network,omitempty"`
+	Parameters     *[]MarathonParameters  `json:"parameters,omitempty"`
+	PortMappings   *[]MarathonPortMapping `json:"portMappings,omitempty"`
+	Privileged     *bool                  `json:"privileged,omitempty"`
+}
+
+// Volume is the docker volume details associated to the container
+type MarathonVolume struct {
+	ContainerPath string `json:"containerPath,omitempty"`
+	HostPath      string `json:"hostPath,omitempty"`
+	Mode          string `json:"mode,omitempty"`
+}
+
+// PortMapping is the portmapping structure between container and mesos
+type MarathonPortMapping struct {
+	ContainerPort int    `json:"containerPort,omitempty"`
+	HostPort      int    `json:"hostPort"`
+	ServicePort   int    `json:"servicePort,omitempty"`
+	Protocol      string `json:"protocol,omitempty"`
+}
+
+// Parameters is the parameters to pass to the docker client when creating the container
+type MarathonParameters struct {
+	Key   string `json:"key,omitempty"`
+	Value string `json:"value,omitempty"`
+}
+
+type MarathonUpgradeStrategy struct {
+	MinimumHealthCapacity float64 `json:"minimumHealthCapacity"`
+	MaximumOverCapacity   float64 `json:"maximumOverCapacity"`
+}
+
+type MarathonHealthCheck struct {
+	Command                *string `json:"command,omitempty"`
+	PortIndex              *int    `json:"portIndex,omitempty"`
+	Path                   *string `json:"path,omitempty"`
+	MaxConsecutiveFailures *int    `json:"maxConsecutiveFailures,omitempty"`
+	Protocol               string  `json:"protocol,omitempty"`
+	GracePeriodSeconds     int     `json:"gracePeriodSeconds,omitempty"`
+	IntervalSeconds        int     `json:"intervalSeconds,omitempty"`
+	TimeoutSeconds         int     `json:"timeoutSeconds,omitempty"`
+}
+
+// Fetch will download URI before task starts
+type MarathonFetch struct {
+	URI        string `json:"uri"`
+	Executable bool   `json:"executable"`
+	Extract    bool   `json:"extract"`
+	Cache      bool   `json:"cache"`
 }

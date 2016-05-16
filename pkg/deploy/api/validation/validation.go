@@ -31,10 +31,15 @@ func ValidateDeploymentConfig(config *deployapi.DeploymentConfig) field.ErrorLis
 	}
 	specPath := field.NewPath("spec")
 	allErrs = append(allErrs, validateDeploymentStrategy(&config.Spec.Strategy, spec, field.NewPath("spec", "strategy"))...)
-	if config.Spec.Template == nil {
-		allErrs = append(allErrs, field.Required(specPath.Child("template"), ""))
-	} else {
+
+	if config.Spec.Template == nil && config.Spec.MarathonAppTemplate == nil {
+		allErrs = append(allErrs, field.Invalid(specPath, config.Spec, "template and marathonAppTemplate are both empty"))
+	}
+	if config.Spec.Template != nil {
 		allErrs = append(allErrs, validation.ValidatePodTemplateSpec(config.Spec.Template, specPath.Child("template"))...)
+	}
+	if config.Spec.MarathonAppTemplate != nil {
+		allErrs = append(allErrs, validateMarathonApplicationTemplate(config.Spec.MarathonAppTemplate, specPath.Child("marathonAppTemplate"))...)
 	}
 	if config.Status.LatestVersion < 0 {
 		allErrs = append(allErrs, field.Invalid(field.NewPath("status", "latestVersion"), config.Status.LatestVersion, "latestVersion cannot be negative"))
@@ -77,6 +82,13 @@ func ValidateDeploymentConfigRollback(rollback *deployapi.DeploymentConfigRollba
 	}
 
 	return result
+}
+
+// ValidatePodTemplateSpec validates the spec of a pod template
+func validateMarathonApplicationTemplate(spec *deployapi.MarathonApplication, fldPath *field.Path) field.ErrorList {
+	allErrs := field.ErrorList{}
+	//TODO: we need to add validation on per field basis
+	return allErrs
 }
 
 func validateDeploymentStrategy(strategy *deployapi.DeploymentStrategy, pod *kapi.PodSpec, fldPath *field.Path) field.ErrorList {

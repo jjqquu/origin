@@ -260,6 +260,14 @@ func (c *DeploymentController) makeDeployerPod(deployment *kapi.ReplicationContr
 	// Assigning to a variable since its address is required
 	maxDeploymentDurationSeconds := deployapi.MaxDeploymentDurationSeconds
 
+	// Setting the node selector on the deployer pod so that it is created
+	// on the same set of nodes as the pods.
+	nodeSelector := deployment.Spec.Template.Spec.NodeSelector
+	if deploymentConfig.Spec.Strategy.Type == deployapi.DeploymentStrategyTypeMarathon {
+		// Setting the node selector as empty
+		nodeSelector = make(map[string]string)
+	}
+
 	pod := &kapi.Pod{
 		ObjectMeta: kapi.ObjectMeta{
 			Name: deployutil.DeployerPodNameForDeployment(deployment.Name),
@@ -282,11 +290,9 @@ func (c *DeploymentController) makeDeployerPod(deployment *kapi.ReplicationContr
 				},
 			},
 			ActiveDeadlineSeconds: &maxDeploymentDurationSeconds,
-			// Setting the node selector on the deployer pod so that it is created
-			// on the same set of nodes as the pods.
-			NodeSelector:       deployment.Spec.Template.Spec.NodeSelector,
-			RestartPolicy:      kapi.RestartPolicyNever,
-			ServiceAccountName: c.serviceAccount,
+			NodeSelector:          nodeSelector,
+			RestartPolicy:         kapi.RestartPolicyNever,
+			ServiceAccountName:    c.serviceAccount,
 		},
 	}
 

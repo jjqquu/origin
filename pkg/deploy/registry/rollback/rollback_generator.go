@@ -29,8 +29,15 @@ func (g *RollbackGenerator) GenerateRollback(from, to *deployapi.DeploymentConfi
 
 	// construct the candidate deploymentConfig based on the rollback spec
 	if spec.IncludeTemplate {
-		if err := kapi.Scheme.Convert(&to.Spec.Template, &rollback.Spec.Template); err != nil {
-			return nil, fmt.Errorf("couldn't copy template to rollback:: %v", err)
+		if to.Spec.Template != nil {
+			if err := kapi.Scheme.Convert(&to.Spec.Template, &rollback.Spec.Template); err != nil {
+				return nil, fmt.Errorf("couldn't copy template to rollback:: %v", err)
+			}
+		}
+		if to.Spec.MarathonAppTemplate != nil {
+			if err := kapi.Scheme.Convert(&to.Spec.MarathonAppTemplate, &rollback.Spec.MarathonAppTemplate); err != nil {
+				return nil, fmt.Errorf("couldn't copy marathon app template to rollback:: %v", err)
+			}
 		}
 	}
 

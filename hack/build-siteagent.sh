@@ -23,6 +23,7 @@ imagedir="${OS_OUTPUT_BINPATH}/linux/amd64"
 # Link or copy image binaries to the appropriate locations.
 ln_or_cp "${imagedir}/openshift"       images/origin/bin/
 ln_or_cp "${imagedir}/openshift"       images/siteagent/bin/
+ln_or_cp "${imagedir}/openshift"       images/marathon-deployer/bin/
 
 # builds an image and tags it two ways - with latest, and with the release tag
 # 2 modes: debug v.s. non-debug -- with/without diagnosis tools
@@ -61,5 +62,6 @@ function image_debug_nocache {
 
 image_debug 		openshift/origin                       images/origin
 image_debug_nocache 	openshift/origin-siteagent             images/siteagent
+image_debug_nocache 	openshift/origin-marathon-deployer     images/marathon-deployer
 
 

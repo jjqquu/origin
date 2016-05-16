@@ -1,0 +1,20 @@
+{
+	"kind": "ClusterRole",
+	"apiVersion": "v1",
+	"metadata": {
+		"name": "site-admin",
+		"creationTimestamp": null
+		},
+	"rules": [
+			{
+				"verbs": [
+					"*"
+				],
+				"attributeRestrictions": null,
+				"resources": [
+					"sites",
+					"sites/proxy"
+				]
+			}
+		]
+}

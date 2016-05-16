@@ -292,11 +292,12 @@ func (c *MasterConfig) RunDeploymentController() {
 	)
 
 	factory := deploycontroller.DeploymentControllerFactory{
-		KubeClient:     kclient,
-		Codec:          c.EtcdHelper.Codec(),
-		Environment:    env,
-		DeployerImage:  c.ImageFor("deployer"),
-		ServiceAccount: bootstrappolicy.DeployerServiceAccountName,
+		KubeClient:            kclient,
+		Codec:                 c.EtcdHelper.Codec(),
+		Environment:           env,
+		DeployerImage:         c.ImageFor("deployer"),
+		MarathonDeployerImage: c.ImageFor("marathon-deployer"),
+		ServiceAccount:        bootstrappolicy.DeployerServiceAccountName,
 	}
 
 	controller := factory.Create()

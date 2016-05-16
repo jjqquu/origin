@@ -35,7 +35,7 @@ type SiteInterface interface {
 	GetApplication(siteId string, projId string, appId string) (result *marathon.Application, err error)
 	GetProjectApplicationList(siteId string, projId string) (result *[]marathon.Application, err error)
 	GetApplicationList(siteId string) (result *marathon.Applications, err error)
-	UpdateApplication(siteId string, projId string, appId string, app *marathon.Application) (result *marathon.DeploymentID, err error)
+	UpdateApplication(siteId string, projId string, appId string, app *marathon.Application, force bool) (result *marathon.DeploymentID, err error)
 	ScaleApplication(siteId string, projId string, appId string, replicas int) (result *marathon.DeploymentID, err error)
 	RestartApplication(siteId string, projId string, appId string) (result *marathon.DeploymentID, err error)
 	CreateApplication(siteId string, projId string, appId string, app *marathon.Application) (result *marathon.Application, err error)
@@ -210,10 +210,14 @@ func (c *sites) GetApplicationList(siteId string) (result *marathon.Applications
 	return
 }
 
-func (c *sites) UpdateApplication(siteId string, projId string, appId string, app *marathon.Application) (result *marathon.DeploymentID, err error) {
+func (c *sites) UpdateApplication(siteId string, projId string, appId string, app *marathon.Application, force bool) (result *marathon.DeploymentID, err error) {
 	appBody, err := json.Marshal(app)
 	if err != nil {
 		return nil, err
+	}
+	paraForce := "false"
+	if force {
+		paraForce = "true"
 	}
 	result = new(marathon.DeploymentID)
 	call := c.r.Put().
@@ -224,6 +228,7 @@ func (c *sites) UpdateApplication(siteId string, projId string, appId string, ap
 		Param(sconst.Sites, siteId).
 		Param(sconst.Projects, projId).
 		Param(sconst.Applications, appId).
+		Param(sconst.ParameterForce, paraForce).
 		Body(appBody).
 		Do()
 	ret, err := handleApi(call, result)

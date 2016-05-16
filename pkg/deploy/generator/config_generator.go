@@ -67,16 +67,30 @@ func (g *DeploymentConfigGenerator) Generate(ctx kapi.Context, name string) (*de
 		template := config.Spec.Template
 		names := sets.NewString(params.ContainerNames...)
 		containerChanged := false
-		for i := range template.Spec.Containers {
-			container := &template.Spec.Containers[i]
-			if !names.Has(container.Name) {
-				continue
+		marathonAppTemplate := config.Spec.MarathonAppTemplate
+		switch {
+		case template != nil:
+			for i := range template.Spec.Containers {
+				container := &template.Spec.Containers[i]
+				if !names.Has(container.Name) {
+					continue
+				}
+				if len(latestEvent.DockerImageReference) > 0 &&
+					container.Image != latestEvent.DockerImageReference {
+					// Update the image
+					container.Image = latestEvent.DockerImageReference
+					// Log the last triggered image ID
+					params.LastTriggeredImage = latestEvent.DockerImageReference
+					containerChanged = true
+				}
 			}
+		case marathonAppTemplate != nil:
+			container := marathonAppTemplate.Container.Docker
 			if len(latestEvent.DockerImageReference) > 0 &&
 				container.Image != latestEvent.DockerImageReference {
-				// Update the image
 				container.Image = latestEvent.DockerImageReference
 				// Log the last triggered image ID
+				// Update the image
 				params.LastTriggeredImage = latestEvent.DockerImageReference
 				containerChanged = true
 			}
