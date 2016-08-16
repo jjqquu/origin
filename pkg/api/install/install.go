@@ -22,6 +22,7 @@ import (
 	_ "github.com/openshift/origin/pkg/route/api/install"
 	_ "github.com/openshift/origin/pkg/sdn/api/install"
 	_ "github.com/openshift/origin/pkg/security/api/install"
+	_ "github.com/openshift/origin/pkg/site/api/install"
 	_ "github.com/openshift/origin/pkg/template/api/install"
 	_ "github.com/openshift/origin/pkg/user/api/install"
 
@@ -37,6 +38,7 @@ import (
 	oauthapi "github.com/openshift/origin/pkg/oauth/api"
 	projectapi "github.com/openshift/origin/pkg/project/api"
 	routeapi "github.com/openshift/origin/pkg/route/api"
+	siteapi "github.com/openshift/origin/pkg/site/api"
 	templateapi "github.com/openshift/origin/pkg/template/api"
 	userapi "github.com/openshift/origin/pkg/user/api"
 
@@ -47,6 +49,7 @@ import (
 	oauthv1 "github.com/openshift/origin/pkg/oauth/api/v1"
 	projectv1 "github.com/openshift/origin/pkg/project/api/v1"
 	routev1 "github.com/openshift/origin/pkg/route/api/v1"
+	sitev1 "github.com/openshift/origin/pkg/site/api/v1"
 	templatev1 "github.com/openshift/origin/pkg/template/api/v1"
 	userv1 "github.com/openshift/origin/pkg/user/api/v1"
 )
@@ -118,6 +121,28 @@ func init() {
 			switch b := objB.(type) {
 			case *kv1.Secret:
 				return true, kv1.Convert_api_Secret_To_v1_Secret(a, b, s)
+			}
+
+		case *sitev1.SiteList:
+			switch b := objB.(type) {
+			case *siteapi.SiteList:
+				return true, sitev1.Convert_v1_SiteList_To_api_SiteList(a, b, s)
+			}
+		case *siteapi.SiteList:
+			switch b := objB.(type) {
+			case *sitev1.SiteList:
+				return true, sitev1.Convert_api_SiteList_To_v1_SiteList(a, b, s)
+			}
+
+		case *sitev1.Site:
+			switch b := objB.(type) {
+			case *siteapi.Site:
+				return true, sitev1.Convert_v1_Site_To_api_Site(a, b, s)
+			}
+		case *siteapi.Site:
+			switch b := objB.(type) {
+			case *sitev1.Site:
+				return true, sitev1.Convert_api_Site_To_v1_Site(a, b, s)
 			}
 
 		case *routev1.RouteList:

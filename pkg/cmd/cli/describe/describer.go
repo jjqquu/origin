@@ -32,6 +32,7 @@ import (
 	quotaapi "github.com/openshift/origin/pkg/quota/api"
 	routeapi "github.com/openshift/origin/pkg/route/api"
 	sdnapi "github.com/openshift/origin/pkg/sdn/api"
+	siteapi "github.com/openshift/origin/pkg/site/api"
 	templateapi "github.com/openshift/origin/pkg/template/api"
 	userapi "github.com/openshift/origin/pkg/user/api"
 )
@@ -47,6 +48,7 @@ func describerMap(c *client.Client, kclient kclient.Interface, host string) map[
 		imageapi.Kind("ImageStreamTag"):               &ImageStreamTagDescriber{c},
 		imageapi.Kind("ImageStreamImage"):             &ImageStreamImageDescriber{c},
 		routeapi.Kind("Route"):                        &RouteDescriber{c, kclient},
+		siteapi.Kind("Site"):                          &SiteDescriber{c, kclient},
 		projectapi.Kind("Project"):                    &ProjectDescriber{c, kclient},
 		templateapi.Kind("Template"):                  &TemplateDescriber{c, meta.NewAccessor(), kapi.Scheme, nil},
 		authorizationapi.Kind("Policy"):               &PolicyDescriber{c},
@@ -775,6 +777,31 @@ func (d *RouteDescriber) Describe(namespace, name string, settings kctl.Describe
 			}
 			formatString(out, "Endpoints", ends)
 		}
+		return nil
+	})
+}
+
+// SiteDescriber generates information about a Site
+type SiteDescriber struct {
+	client.Interface
+	kubeClient kclient.Interface
+}
+
+// Describe returns the description of a route
+func (d *SiteDescriber) Describe(namespace, name string, settings kctl.DescriberSettings) (string, error) {
+	c := d.Sites(namespace)
+	site, err := c.Get(name)
+	if err != nil {
+		return "", err
+	}
+
+	return tabbedString(func(out *tabwriter.Writer) error {
+		formatMeta(out, site.ObjectMeta)
+		formatString(out, "Display Name", site.Annotations[siteapi.SiteDisplayName])
+		formatString(out, "Description", site.Annotations[siteapi.SiteDescription])
+		formatString(out, "Site Address", site.Spec.Address)
+		formatString(out, "Status", site.Status.Phase)
+		formatString(out, "Agent Address", site.Status.SiteAgentAddress)
 		return nil
 	})
 }

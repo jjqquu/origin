@@ -79,6 +79,7 @@ import (
 	hostsubnetetcd "github.com/openshift/origin/pkg/sdn/registry/hostsubnet/etcd"
 	netnamespaceetcd "github.com/openshift/origin/pkg/sdn/registry/netnamespace/etcd"
 	saoauth "github.com/openshift/origin/pkg/serviceaccounts/oauthclient"
+	siteetcd "github.com/openshift/origin/pkg/site/registry/site/etcd"
 	templateregistry "github.com/openshift/origin/pkg/template/registry"
 	templateetcd "github.com/openshift/origin/pkg/template/registry/etcd"
 	groupetcd "github.com/openshift/origin/pkg/user/registry/group/etcd"
@@ -431,6 +432,9 @@ func (c *MasterConfig) GetRestStorage() map[string]rest.Storage {
 	groupStorage, err := groupetcd.NewREST(c.RESTOptionsGetter)
 	checkStorageErr(err)
 
+	siteStorage, siteStatusStorage, err := siteetcd.NewREST(c.RESTOptionsGetter)
+	checkStorageErr(err)
+
 	policyStorage, err := policyetcd.NewStorage(c.RESTOptionsGetter)
 	checkStorageErr(err)
 	policyRegistry := policyregistry.NewRegistry(policyStorage)
@@ -578,6 +582,9 @@ func (c *MasterConfig) GetRestStorage() map[string]rest.Storage {
 
 		"routes":        routeStorage,
 		"routes/status": routeStatusStorage,
+
+		"sites":        siteStorage,
+		"sites/status": siteStatusStorage,
 
 		"projects":        projectStorage,
 		"projectRequests": projectRequestStorage,

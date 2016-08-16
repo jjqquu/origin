@@ -47,6 +47,7 @@ func init() {
 		`github.com/openshift/origin/pkg/route/api/v1`,
 		`github.com/openshift/origin/pkg/sdn/api/v1`,
 		`github.com/openshift/origin/pkg/security/api/v1`,
+		`github.com/openshift/origin/pkg/site/api/v1`,
 		`github.com/openshift/origin/pkg/template/api/v1`,
 		`github.com/openshift/origin/pkg/user/api/v1`,
 	}, ",")

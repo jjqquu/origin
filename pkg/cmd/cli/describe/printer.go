@@ -23,6 +23,7 @@ import (
 	quotaapi "github.com/openshift/origin/pkg/quota/api"
 	routeapi "github.com/openshift/origin/pkg/route/api"
 	sdnapi "github.com/openshift/origin/pkg/sdn/api"
+	siteapi "github.com/openshift/origin/pkg/site/api"
 	templateapi "github.com/openshift/origin/pkg/template/api"
 	userapi "github.com/openshift/origin/pkg/user/api"
 )
@@ -36,6 +37,7 @@ var (
 	imageStreamColumns      = []string{"NAME", "DOCKER REPO", "TAGS", "UPDATED"}
 	projectColumns          = []string{"NAME", "DISPLAY NAME", "STATUS"}
 	routeColumns            = []string{"NAME", "HOST/PORT", "PATH", "SERVICES", "PORT", "TERMINATION"}
+	siteColumns             = []string{"NAME", "ADDRESS", "STATUS", "Agent ADDRESS"}
 	deploymentConfigColumns = []string{"NAME", "REVISION", "DESIRED", "CURRENT", "TRIGGERED BY"}
 	templateColumns         = []string{"NAME", "DESCRIPTION", "PARAMETERS", "OBJECTS"}
 	policyColumns           = []string{"NAME", "ROLES", "LAST MODIFIED"}
@@ -83,6 +85,8 @@ func NewHumanReadablePrinter(printOptions *kctl.PrintOptions) *kctl.HumanReadabl
 	p.Handler(projectColumns, printProjectList)
 	p.Handler(routeColumns, printRoute)
 	p.Handler(routeColumns, printRouteList)
+	p.Handler(siteColumns, printSite)
+	p.Handler(siteColumns, printSiteList)
 	p.Handler(deploymentConfigColumns, printDeploymentConfig)
 	p.Handler(deploymentConfigColumns, printDeploymentConfigList)
 	p.Handler(templateColumns, printTemplate)
@@ -588,6 +592,26 @@ func printRoute(route *routeapi.Route, w io.Writer, opts kctl.PrintOptions) erro
 func printRouteList(routeList *routeapi.RouteList, w io.Writer, opts kctl.PrintOptions) error {
 	for _, route := range routeList.Items {
 		if err := printRoute(&route, w, opts); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func printSite(site *siteapi.Site, w io.Writer, opts kctl.PrintOptions) error {
+	if opts.WithNamespace {
+		if _, err := fmt.Fprintf(w, "%s\t", site.Namespace); err != nil {
+			return err
+		}
+	}
+
+	_, err := fmt.Fprintf(w, "%s\t%s\t%s\t%s\n", site.Name, site.Spec.Address, site.Status.Phase, site.Status.SiteAgentAddress)
+	return err
+}
+
+func printSiteList(siteList *siteapi.SiteList, w io.Writer, opts kctl.PrintOptions) error {
+	for _, site := range siteList.Items {
+		if err := printSite(&site, w, opts); err != nil {
 			return err
 		}
 	}
