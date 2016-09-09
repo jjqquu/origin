@@ -75,6 +75,7 @@ oadm-prune-images.1
 oadm-prune.1
 oadm-registry.1
 oadm-router.1
+oadm-siteagent.1
 oadm-taint.1
 oadm-top-images.1
 oadm-top-imagestreams.1

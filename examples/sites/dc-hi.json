@@ -1,0 +1,55 @@
+{
+    "kind": "DeploymentConfig",
+    "apiVersion": "v1",
+    "metadata": {
+	"name": "qjpdc",
+	"creationTimestamp": null
+    },
+    "spec": {
+	"strategy": {
+	    "type": "Marathon",
+	    "resources": {}
+	},
+	"triggers": [],
+	"site": "qjp",
+	"replicas": 2,
+	"selector": {
+	    "name": "dummycontainer"
+	},
+	"marathonAppTemplate": {
+		"id": "/default/hi",
+		"cmd": null,
+		"container": {
+			"docker": {
+				"forcePullImage": false,
+				"image": "docker.io/nginx:latest",
+				"network": "BRIDGE",
+				"parameters": [],
+				"portMappings": [
+					{
+						"containerPort": 80,
+						"hostPort": 0,
+						"labels": {},
+						"protocol": "tcp",
+						"servicePort": 10000
+					}
+				],
+				"privileged": false
+			},
+			"type": "DOCKER",
+			"volumes": []
+		},
+		"cpus": 0.2,
+		"disk": 2,
+		"mem": 16,
+		"portDefinitions": [
+			{
+				"labels": {},
+				"port": 10000,
+				"protocol": "tcp"
+			}
+		]
+	}
+    },
+    "status": {}
+}

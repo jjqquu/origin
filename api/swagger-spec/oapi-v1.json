@@ -19668,6 +19668,426 @@
     ]
    },
    {
+    "path": "/oapi/v1/namespaces/{namespace}/sites/{name}/proxy",
+    "description": "OpenShift REST API, version v1",
+    "operations": [
+     {
+      "type": "string",
+      "method": "GET",
+      "summary": "connect GET requests to proxy of Site",
+      "nickname": "connectGetNamespacedSiteProxy",
+      "parameters": [
+       {
+        "type": "string",
+        "paramType": "path",
+        "name": "namespace",
+        "description": "object name and auth scope, such as for teams and projects",
+        "required": true,
+        "allowMultiple": false
+       },
+       {
+        "type": "string",
+        "paramType": "path",
+        "name": "name",
+        "description": "name of the Site",
+        "required": true,
+        "allowMultiple": false
+       }
+      ],
+      "produces": [
+       "*/*"
+      ],
+      "consumes": [
+       "*/*"
+      ]
+     },
+     {
+      "type": "string",
+      "method": "POST",
+      "summary": "connect POST requests to proxy of Site",
+      "nickname": "connectPostNamespacedSiteProxy",
+      "parameters": [
+       {
+        "type": "string",
+        "paramType": "path",
+        "name": "namespace",
+        "description": "object name and auth scope, such as for teams and projects",
+        "required": true,
+        "allowMultiple": false
+       },
+       {
+        "type": "string",
+        "paramType": "path",
+        "name": "name",
+        "description": "name of the Site",
+        "required": true,
+        "allowMultiple": false
+       }
+      ],
+      "produces": [
+       "*/*"
+      ],
+      "consumes": [
+       "*/*"
+      ]
+     },
+     {
+      "type": "string",
+      "method": "PUT",
+      "summary": "connect PUT requests to proxy of Site",
+      "nickname": "connectPutNamespacedSiteProxy",
+      "parameters": [
+       {
+        "type": "string",
+        "paramType": "path",
+        "name": "namespace",
+        "description": "object name and auth scope, such as for teams and projects",
+        "required": true,
+        "allowMultiple": false
+       },
+       {
+        "type": "string",
+        "paramType": "path",
+        "name": "name",
+        "description": "name of the Site",
+        "required": true,
+        "allowMultiple": false
+       }
+      ],
+      "produces": [
+       "*/*"
+      ],
+      "consumes": [
+       "*/*"
+      ]
+     },
+     {
+      "type": "string",
+      "method": "DELETE",
+      "summary": "connect DELETE requests to proxy of Site",
+      "nickname": "connectDeleteNamespacedSiteProxy",
+      "parameters": [
+       {
+        "type": "string",
+        "paramType": "path",
+        "name": "namespace",
+        "description": "object name and auth scope, such as for teams and projects",
+        "required": true,
+        "allowMultiple": false
+       },
+       {
+        "type": "string",
+        "paramType": "path",
+        "name": "name",
+        "description": "name of the Site",
+        "required": true,
+        "allowMultiple": false
+       }
+      ],
+      "produces": [
+       "*/*"
+      ],
+      "consumes": [
+       "*/*"
+      ]
+     },
+     {
+      "type": "string",
+      "method": "HEAD",
+      "summary": "connect HEAD requests to proxy of Site",
+      "nickname": "connectHeadNamespacedSiteProxy",
+      "parameters": [
+       {
+        "type": "string",
+        "paramType": "path",
+        "name": "namespace",
+        "description": "object name and auth scope, such as for teams and projects",
+        "required": true,
+        "allowMultiple": false
+       },
+       {
+        "type": "string",
+        "paramType": "path",
+        "name": "name",
+        "description": "name of the Site",
+        "required": true,
+        "allowMultiple": false
+       }
+      ],
+      "produces": [
+       "*/*"
+      ],
+      "consumes": [
+       "*/*"
+      ]
+     },
+     {
+      "type": "string",
+      "method": "OPTIONS",
+      "summary": "connect OPTIONS requests to proxy of Site",
+      "nickname": "connectOptionsNamespacedSiteProxy",
+      "parameters": [
+       {
+        "type": "string",
+        "paramType": "path",
+        "name": "namespace",
+        "description": "object name and auth scope, such as for teams and projects",
+        "required": true,
+        "allowMultiple": false
+       },
+       {
+        "type": "string",
+        "paramType": "path",
+        "name": "name",
+        "description": "name of the Site",
+        "required": true,
+        "allowMultiple": false
+       }
+      ],
+      "produces": [
+       "*/*"
+      ],
+      "consumes": [
+       "*/*"
+      ]
+     }
+    ]
+   },
+   {
+    "path": "/oapi/v1/namespaces/{namespace}/sites/{name}/proxy/{path}",
+    "description": "OpenShift REST API, version v1",
+    "operations": [
+     {
+      "type": "string",
+      "method": "GET",
+      "summary": "connect GET requests to proxy of Site",
+      "nickname": "connectGetNamespacedSiteProxy",
+      "parameters": [
+       {
+        "type": "string",
+        "paramType": "path",
+        "name": "namespace",
+        "description": "object name and auth scope, such as for teams and projects",
+        "required": true,
+        "allowMultiple": false
+       },
+       {
+        "type": "string",
+        "paramType": "path",
+        "name": "name",
+        "description": "name of the Site",
+        "required": true,
+        "allowMultiple": false
+       },
+       {
+        "type": "string",
+        "paramType": "path",
+        "name": "path",
+        "description": "path to the resource",
+        "required": true,
+        "allowMultiple": false
+       }
+      ],
+      "produces": [
+       "*/*"
+      ],
+      "consumes": [
+       "*/*"
+      ]
+     },
+     {
+      "type": "string",
+      "method": "POST",
+      "summary": "connect POST requests to proxy of Site",
+      "nickname": "connectPostNamespacedSiteProxy",
+      "parameters": [
+       {
+        "type": "string",
+        "paramType": "path",
+        "name": "namespace",
+        "description": "object name and auth scope, such as for teams and projects",
+        "required": true,
+        "allowMultiple": false
+       },
+       {
+        "type": "string",
+        "paramType": "path",
+        "name": "name",
+        "description": "name of the Site",
+        "required": true,
+        "allowMultiple": false
+       },
+       {
+        "type": "string",
+        "paramType": "path",
+        "name": "path",
+        "description": "path to the resource",
+        "required": true,
+        "allowMultiple": false
+       }
+      ],
+      "produces": [
+       "*/*"
+      ],
+      "consumes": [
+       "*/*"
+      ]
+     },
+     {
+      "type": "string",
+      "method": "PUT",
+      "summary": "connect PUT requests to proxy of Site",
+      "nickname": "connectPutNamespacedSiteProxy",
+      "parameters": [
+       {
+        "type": "string",
+        "paramType": "path",
+        "name": "namespace",
+        "description": "object name and auth scope, such as for teams and projects",
+        "required": true,
+        "allowMultiple": false
+       },
+       {
+        "type": "string",
+        "paramType": "path",
+        "name": "name",
+        "description": "name of the Site",
+        "required": true,
+        "allowMultiple": false
+       },
+       {
+        "type": "string",
+        "paramType": "path",
+        "name": "path",
+        "description": "path to the resource",
+        "required": true,
+        "allowMultiple": false
+       }
+      ],
+      "produces": [
+       "*/*"
+      ],
+      "consumes": [
+       "*/*"
+      ]
+     },
+     {
+      "type": "string",
+      "method": "DELETE",
+      "summary": "connect DELETE requests to proxy of Site",
+      "nickname": "connectDeleteNamespacedSiteProxy",
+      "parameters": [
+       {
+        "type": "string",
+        "paramType": "path",
+        "name": "namespace",
+        "description": "object name and auth scope, such as for teams and projects",
+        "required": true,
+        "allowMultiple": false
+       },
+       {
+        "type": "string",
+        "paramType": "path",
+        "name": "name",
+        "description": "name of the Site",
+        "required": true,
+        "allowMultiple": false
+       },
+       {
+        "type": "string",
+        "paramType": "path",
+        "name": "path",
+        "description": "path to the resource",
+        "required": true,
+        "allowMultiple": false
+       }
+      ],
+      "produces": [
+       "*/*"
+      ],
+      "consumes": [
+       "*/*"
+      ]
+     },
+     {
+      "type": "string",
+      "method": "HEAD",
+      "summary": "connect HEAD requests to proxy of Site",
+      "nickname": "connectHeadNamespacedSiteProxy",
+      "parameters": [
+       {
+        "type": "string",
+        "paramType": "path",
+        "name": "namespace",
+        "description": "object name and auth scope, such as for teams and projects",
+        "required": true,
+        "allowMultiple": false
+       },
+       {
+        "type": "string",
+        "paramType": "path",
+        "name": "name",
+        "description": "name of the Site",
+        "required": true,
+        "allowMultiple": false
+       },
+       {
+        "type": "string",
+        "paramType": "path",
+        "name": "path",
+        "description": "path to the resource",
+        "required": true,
+        "allowMultiple": false
+       }
+      ],
+      "produces": [
+       "*/*"
+      ],
+      "consumes": [
+       "*/*"
+      ]
+     },
+     {
+      "type": "string",
+      "method": "OPTIONS",
+      "summary": "connect OPTIONS requests to proxy of Site",
+      "nickname": "connectOptionsNamespacedSiteProxy",
+      "parameters": [
+       {
+        "type": "string",
+        "paramType": "path",
+        "name": "namespace",
+        "description": "object name and auth scope, such as for teams and projects",
+        "required": true,
+        "allowMultiple": false
+       },
+       {
+        "type": "string",
+        "paramType": "path",
+        "name": "name",
+        "description": "name of the Site",
+        "required": true,
+        "allowMultiple": false
+       },
+       {
+        "type": "string",
+        "paramType": "path",
+        "name": "path",
+        "description": "path to the resource",
+        "required": true,
+        "allowMultiple": false
+       }
+      ],
+      "produces": [
+       "*/*"
+      ],
+      "consumes": [
+       "*/*"
+      ]
+     }
+    ]
+   },
+   {
     "path": "/oapi/v1/namespaces/{namespace}/sites/{name}/status",
     "description": "OpenShift REST API, version v1",
     "operations": [
@@ -23615,6 +24035,14 @@
      "template": {
       "$ref": "v1.PodTemplateSpec",
       "description": "Template is the object that describes the pod that will be created if insufficient replicas are detected."
+     },
+     "site": {
+      "type": "string",
+      "description": "Site is the identifier that specifies the site where deployment will be conducted"
+     },
+     "marathonAppTemplate": {
+      "$ref": "v1.MarathonApplication",
+      "description": "MarathonAppTemplate is the object that describes the application that will be created by mesos Marathon scheduler"
      }
     }
    },
@@ -24998,6 +25426,361 @@
       "type": "integer",
       "format": "int64",
       "description": "A special supplemental group that applies to all containers in a pod. Some volume types allow the Kubelet to change the ownership of that volume to be owned by the pod:\n\n1. The owning GID will be the FSGroup 2. The setgid bit is set (new files created in the volume will be owned by FSGroup) 3. The permission bits are OR'd with rw-rw "
+     }
+    }
+   },
+   "v1.MarathonApplication": {
+    "id": "v1.MarathonApplication",
+    "description": "Application is the definition for an application in marathon",
+    "required": [
+     "ports",
+     "dependencies",
+     "uris",
+     "fetch"
+    ],
+    "properties": {
+     "id": {
+      "type": "string",
+      "description": "Unique identifier for the app consisting of a series of names separated by slashes."
+     },
+     "cmd": {
+      "type": "string",
+      "description": "The command that is executed."
+     },
+     "args": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "An array of strings that represents an alternative mode of specifying the command to run."
+     },
+     "constraints": {
+      "type": "array",
+      "items": {
+       "$ref": "v1.MarathonConstraint"
+      },
+      "description": "Valid constraint operators are one of [\"UNIQUE\", \"CLUSTER\", \"GROUP_BY\"]."
+     },
+     "container": {
+      "$ref": "v1.MarathonContainer",
+      "description": "Container is the definition for a container type in marathon Additional data passed to the containerizer on application launch. These consist of a type, zero or more volumes, and additional type-specific options. Volumes and type are optional (the default type is DOCKER)."
+     },
+     "cpus": {
+      "type": "number",
+      "format": "double",
+      "description": "The number of CPU`s this application needs per instance."
+     },
+     "disk": {
+      "type": "number",
+      "format": "double",
+      "description": "The number of DISK`s this application needs per instance."
+     },
+     "env": {
+      "type": "object",
+      "description": "Key value pairs that get added to the environment variables of the process to start."
+     },
+     "executor": {
+      "type": "string",
+      "description": "The executor to use to launch this application."
+     },
+     "healthChecks": {
+      "type": "array",
+      "items": {
+       "$ref": "v1.MarathonHealthCheck"
+      },
+      "description": "An array of checks to be performed on running tasks to determine if they are operating as expected. Health checks begin immediately upon task launch."
+     },
+     "mem": {
+      "type": "number",
+      "format": "double",
+      "description": "The amount of memory in MB that is needed for the application per instance."
+     },
+     "ports": {
+      "type": "array",
+      "items": {
+       "type": "integer"
+      },
+      "description": "Deprecated . Use portDefinitions instead."
+     },
+     "requirePorts": {
+      "type": "boolean",
+      "description": "Normally, the host ports of your tasks are automatically assigned. This corresponds to the requirePorts value false which is the default. If you need more control and want to specify your host ports in advance, you can set requirePorts to true. This way the ports you have specified are used as host ports. That also means that Marathon can schedule the associated tasks only on hosts that have the specified ports available."
+     },
+     "backoffSeconds": {
+      "type": "number",
+      "format": "double",
+      "description": "Configures exponential backoff behavior when launching potentially sick apps. This prevents sandboxes associated with consecutively failing tasks from filling up the hard disk on Mesos slaves. The backoff period is multiplied by the factor for each consecutive failure until it reaches maxLaunchDelaySeconds. This applies also to tasks that are killed due to failing too many health checks. backoff seconds when failure happens"
+     },
+     "backoffFactor": {
+      "type": "number",
+      "format": "double",
+      "description": "backoff factor used to multiplied by backoff seconds"
+     },
+     "maxLaunchDelaySeconds": {
+      "type": "number",
+      "format": "double",
+      "description": "Max launch delay seconds when launching potentially sick apps"
+     },
+     "dependencies": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "A list of services upon which this application depends. An order is derived from the dependencies for performing start/stop and upgrade of the application. For example, an application /a relies on the services /b which itself relies on /c. To start all 3 applications, first /c is started than /b than /a."
+     },
+     "user": {
+      "type": "string",
+      "description": "User to launch the application container"
+     },
+     "upgradeStrategy": {
+      "$ref": "v1.MarathonUpgradeStrategy",
+      "description": "During an upgrade all instances of an application get replaced by a new version."
+     },
+     "uris": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "Since v0.15.0: Deprecated . Use fetch instead."
+     },
+     "labels": {
+      "type": "object",
+      "description": "Attaching metadata to apps can be useful to expose additional information to other services, so we added the ability to place labels on apps (for example, you could label apps \"staging\" and \"production\" to mark services by their position in the pipeline)."
+     },
+     "acceptedResourceRoles": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "Optional. A list of resource roles. Marathon considers only resource offers with roles in this list for launching tasks of this app. If you do not specify this, Marathon considers all resource offers with roles that have been configured by the --default_accepted_resource_roles command line flag. If no --default_accepted_resource_roles was given on startup, Marathon considers all resource offers."
+     },
+     "fetch": {
+      "type": "array",
+      "items": {
+       "$ref": "v1.MarathonFetch"
+      },
+      "description": "The list of URIs to fetch before the task starts."
+     }
+    }
+   },
+   "v1.MarathonConstraint": {
+    "id": "v1.MarathonConstraint",
+    "description": "Constraint is the container placement constraint for scheduling an application in marathon",
+    "properties": {
+     "constraint": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "Valid constraint operators are one of [\"UNIQUE\", \"CLUSTER\", \"GROUP_BY\"]."
+     }
+    }
+   },
+   "v1.MarathonContainer": {
+    "id": "v1.MarathonContainer",
+    "description": "Container is the definition for a container type in marathon",
+    "properties": {
+     "type": {
+      "type": "string",
+      "description": "\n container types, currelty \"docker\"/\"mesos\" supported"
+     },
+     "docker": {
+      "$ref": "v1.MarathonDocker",
+      "description": "Docker is the docker definition from a marathon application"
+     },
+     "volumes": {
+      "type": "array",
+      "items": {
+       "$ref": "v1.MarathonVolume"
+      },
+      "description": "Volume is the docker volume details associated to the container"
+     }
+    }
+   },
+   "v1.MarathonDocker": {
+    "id": "v1.MarathonDocker",
+    "description": "Docker is the docker definition from a marathon application",
+    "properties": {
+     "forcePullImage": {
+      "type": "boolean",
+      "description": "ForcePullImage Flag force Docker to pull the image before launching each task, by default false."
+     },
+     "image": {
+      "type": "string",
+      "description": "Image name of the docker container"
+     },
+     "network": {
+      "type": "string",
+      "description": "Network mode, currently support \"bridge\"/\"host\"/\"none\""
+     },
+     "parameters": {
+      "type": "array",
+      "items": {
+       "$ref": "v1.MarathonParameters"
+      },
+      "description": "The parameters object allows users to supply arbitrary command-line options for the docker run command executed by the Mesos containerizer."
+     },
+     "portMappings": {
+      "type": "array",
+      "items": {
+       "$ref": "v1.MarathonPortMapping"
+      },
+      "description": "PortMapping is the portmapping structure between container and mesos"
+     },
+     "privileged": {
+      "type": "boolean",
+      "description": "Privileged flag allows users to run containers in privileged mode. This flag is false by default."
+     }
+    }
+   },
+   "v1.MarathonParameters": {
+    "id": "v1.MarathonParameters",
+    "description": "Parameters is the parameters to pass to the docker client when creating the container",
+    "properties": {
+     "key": {
+      "type": "string",
+      "description": "Paramenter key"
+     },
+     "value": {
+      "type": "string",
+      "description": "Paramenter value"
+     }
+    }
+   },
+   "v1.MarathonPortMapping": {
+    "id": "v1.MarathonPortMapping",
+    "description": "PortMapping is the portmapping structure between container and mesos",
+    "required": [
+     "hostPort"
+    ],
+    "properties": {
+     "containerPort": {
+      "type": "integer",
+      "format": "int32",
+      "description": "container port refers to the port the application listens to inside of the container."
+     },
+     "hostPort": {
+      "type": "integer",
+      "format": "int32",
+      "description": "hostPort is optional and defaults to 0. 0 retains the traditional meaning in Marathon, which is \"a random port from the range included in the Mesos resource offer\". The resulting host ports for each task are exposed via the task details in the REST API and the Marathon web UI."
+     },
+     "servicePort": {
+      "type": "integer",
+      "format": "int32",
+      "description": "\n is a helper port intended for doing service discovery using a well-known port per service. The assigned servicePort value is not used/interpreted by Marathon itself but supposed to used by load balancer infrastructure."
+     },
+     "protocol": {
+      "type": "string",
+      "description": "The \"protocol\" parameter is optional and defaults to \"tcp\". Its possible values are \"tcp\" and \"udp\""
+     }
+    }
+   },
+   "v1.MarathonVolume": {
+    "id": "v1.MarathonVolume",
+    "description": "Volume is the docker volume details associated to the container",
+    "properties": {
+     "containerPath": {
+      "type": "string",
+      "description": "container path refers to the volume path the application accesses inside of the container."
+     },
+     "hostPath": {
+      "type": "string",
+      "description": "host path refers to the local host volume path to be mounted by the container."
+     },
+     "mode": {
+      "type": "string",
+      "description": "Read/Write mode of the mounted volume inside of the container. \"R\"/\"W\"/\"RW\""
+     }
+    }
+   },
+   "v1.MarathonHealthCheck": {
+    "id": "v1.MarathonHealthCheck",
+    "description": "Health checks to be performed by marathon on running tasks to determine if they are operating as expected.",
+    "properties": {
+     "command": {
+      "type": "string",
+      "description": "Command to run in order to determine the health of a task."
+     },
+     "portIndex": {
+      "type": "integer",
+      "format": "int32",
+      "description": "(Optional. Default: 0): Index in this app's ports array to be used for health requests."
+     },
+     "path": {
+      "type": "string",
+      "description": "(Optional. Default: \"/\"): Path to endpoint exposed by the task that will provide health status."
+     },
+     "maxConsecutiveFailures": {
+      "type": "integer",
+      "format": "int32",
+      "description": "(Optional. Default: 3) : Number of consecutive health check failures after which the unhealthy task should be killed."
+     },
+     "protocol": {
+      "type": "string",
+      "description": "\n (Optional. Default: \"HTTP\"): Protocol of the requests to be performed. One of \"HTTP\", \"HTTPS\", \"TCP\", or \"Command\"."
+     },
+     "gracePeriodSeconds": {
+      "type": "integer",
+      "format": "int32",
+      "description": "(Optional. Default: 15): Health check failures are ignored within this number of seconds of the task being started or until the task becomes healthy for the first time."
+     },
+     "intervalSeconds": {
+      "type": "integer",
+      "format": "int32",
+      "description": "(Optional. Default: 10): Number of seconds to wait between health checks."
+     },
+     "timeoutSeconds": {
+      "type": "integer",
+      "format": "int32",
+      "description": "(Optional. Default: 20): Number of seconds after which a health check is considered a failure regardless of the response."
+     }
+    }
+   },
+   "v1.MarathonUpgradeStrategy": {
+    "id": "v1.MarathonUpgradeStrategy",
+    "description": "The upgradeStrategy controls how Marathon stops old versions and launches new versions.",
+    "required": [
+     "minimumHealthCapacity",
+     "maximumOverCapacity"
+    ],
+    "properties": {
+     "minimumHealthCapacity": {
+      "type": "number",
+      "format": "double",
+      "description": "\n (Optional. Default: 1.0) - a number between 0and 1 that is multiplied with the instance count. This is the minimum number of healthy nodes that do not sacrifice overall application purpose. Marathon will make sure, during the upgrade process, that at any point of time this number of healthy instances are up."
+     },
+     "maximumOverCapacity": {
+      "type": "number",
+      "format": "double",
+      "description": "(Optional. Default: 1.0) - a number between 0 and 1 which is multiplied with the instance count. This is the maximum number of additional instances launched at any point of time during the upgrade process."
+     }
+    }
+   },
+   "v1.MarathonFetch": {
+    "id": "v1.MarathonFetch",
+    "description": "Fetch will download URI before task starts",
+    "required": [
+     "uri",
+     "executable",
+     "extract",
+     "cache"
+    ],
+    "properties": {
+     "uri": {
+      "type": "string",
+      "description": "URI to be fetched by Mesos fetcher module"
+     },
+     "executable": {
+      "type": "boolean",
+      "description": "Set fetched artifact as executable"
+     },
+     "extract": {
+      "type": "boolean",
+      "description": "Extract fetched artifact if supported by Mesos fetcher mod"
+     },
+     "cache": {
+      "type": "boolean",
+      "description": "Cache fetched artifact if supported by Mesos fetcher module"
      }
     }
    },

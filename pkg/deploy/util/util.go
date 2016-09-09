@@ -160,6 +160,37 @@ func EncodeDeploymentConfig(config *deployapi.DeploymentConfig, codec runtime.Co
 	return string(bytes[:]), nil
 }
 
+//
+func GetPodTemplatePlaceHolder(config *deployapi.DeploymentConfig) *api.PodTemplateSpec {
+	const DummyContainerName = "dummycontainer"
+	const DummyContainerImage = "dummyimage"
+
+	container := api.Container{
+		Name:  DummyContainerName,
+		Image: DummyContainerImage,
+	}
+	spec := api.PodSpec{
+		Containers: []api.Container{},
+	}
+	spec.Containers = append(spec.Containers, container)
+
+	deploymentName := LatestDeploymentNameForConfig(config)
+	labels := map[string]string{}
+	for k, v := range config.Spec.Selector {
+		labels[k] = v
+	}
+	labels[deployapi.DeploymentConfigLabel] = config.Name
+	labels[deployapi.DeploymentLabel] = deploymentName
+
+	result := &api.PodTemplateSpec{
+		ObjectMeta: api.ObjectMeta{
+			Labels: labels,
+		},
+		Spec: spec,
+	}
+	return result
+}
+
 // MakeDeployment creates a deployment represented as a ReplicationController and based on the given
 // DeploymentConfig. The controller replica count will be zero.
 func MakeDeployment(config *deployapi.DeploymentConfig, codec runtime.Codec) (*api.ReplicationController, error) {
@@ -351,6 +382,18 @@ func IsFailedDeployment(deployment *api.ReplicationController) bool {
 	return current == deployapi.DeploymentStatusFailed
 }
 
+func DeploymentVersionOfMarathonScale(obj runtime.Object) (int64, bool) {
+	return int64AnnotationFor(obj, deployapi.DeploymentMarathonScaleAnnotation)
+}
+
+func DeploymentVersionOfMarathonReconcile(obj runtime.Object) (int64, bool) {
+	return int64AnnotationFor(obj, deployapi.DeploymentMarathonReconcileAnnotation)
+}
+
+func DeploymentVersionOfMarathonRetry(obj runtime.Object) (int64, bool) {
+	return int64AnnotationFor(obj, deployapi.DeploymentMarathonRetryAnnotation)
+}
+
 // CanTransitionPhase returns whether it is allowed to go from the current to the next phase.
 func CanTransitionPhase(current, next deployapi.DeploymentStatus) bool {
 	switch current {
@@ -397,6 +440,18 @@ func int32AnnotationFor(obj runtime.Object, key string) (int32, bool) {
 		return 0, false
 	}
 	return int32(i), true
+}
+
+func int64AnnotationFor(obj runtime.Object, key string) (int64, bool) {
+	s := annotationFor(obj, key)
+	if len(s) == 0 {
+		return 0, false
+	}
+	i, err := strconv.ParseInt(s, 10, 64)
+	if err != nil {
+		return 0, false
+	}
+	return int64(i), true
 }
 
 // DeploymentsForCleanup determines which deployments for a configuration are relevant for the

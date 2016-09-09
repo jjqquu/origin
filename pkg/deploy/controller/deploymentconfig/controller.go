@@ -156,7 +156,12 @@ func (c *DeploymentConfigController) Handle(config *deployapi.DeploymentConfig) 
 			return c.updateStatus(config, existingDeployments)
 		}
 
-		return c.reconcileDeployments(existingDeployments, config)
+		switch config.Spec.Strategy.Type {
+		case deployapi.DeploymentStrategyTypeMarathon:
+			return c.reconcileMarathonDeployments(existingDeployments, config)
+		default:
+			return c.reconcileDeployments(existingDeployments, config)
+		}
 	}
 	// If the config is paused we shouldn't create new deployments for it.
 	if config.Spec.Paused {
@@ -170,9 +175,25 @@ func (c *DeploymentConfigController) Handle(config *deployapi.DeploymentConfig) 
 	}
 	// No deployments are running and the latest deployment doesn't exist, so
 	// create the new deployment.
+	if config.Spec.Strategy.Type == deployapi.DeploymentStrategyTypeMarathon {
+		// if it's a remote marathon deployment, we set a dummy template
+		config.Spec.Template = deployutil.GetPodTemplatePlaceHolder(config)
+	}
 	deployment, err := deployutil.MakeDeployment(config, c.codec)
 	if err != nil {
 		return fatalError(fmt.Sprintf("couldn't make deployment from (potentially invalid) deployment config %s: %v", deployutil.LabelForDeploymentConfig(config), err))
+	}
+	if config.Spec.Strategy.Type == deployapi.DeploymentStrategyTypeMarathon {
+		// it's a remote marathon deployment, set deployment action accordingly
+		version, isScale := deployutil.DeploymentVersionOfMarathonScale(config)
+		if isScale && version == config.Status.LatestVersion {
+			deployment.Annotations[deployapi.DeploymentMarathonScaleAnnotation] = strconv.FormatInt(version, 10)
+		}
+
+		version, isReconcile := deployutil.DeploymentVersionOfMarathonReconcile(config)
+		if isReconcile && version == config.Status.LatestVersion {
+			deployment.Annotations[deployapi.DeploymentMarathonReconcileAnnotation] = strconv.FormatInt(version, 10)
+		}
 	}
 	created, err := c.rn.ReplicationControllers(config.Namespace).Create(deployment)
 	if err != nil {
@@ -463,4 +484,122 @@ func (c *DeploymentConfigController) cleanupOldDeployments(existingDeployments [
 	}
 
 	return kutilerrors.NewAggregate(deletionErrors)
+}
+
+func (c *DeploymentConfigController) updateMarathonDeploymentStatus(config *deployapi.DeploymentConfig, deployments []kapi.ReplicationController) error {
+	// TODO: later we may think about to support status updating of marathon deployer
+	return nil
+}
+
+func (c *DeploymentConfigController) reconcileMarathonDeployments(existingDeployments []kapi.ReplicationController, config *deployapi.DeploymentConfig) error {
+	glog.Info("reconciling marathon deployment")
+
+	latestIsDeployed, latestDeployment := deployutil.LatestDeploymentInfo(config, existingDeployments)
+	if !latestIsDeployed {
+		// We shouldn't be reconciling if the latest deployment hasn't been
+		// created; this is enforced on the calling side, but double checking
+		// can't hurt.
+		return c.updateMarathonDeploymentStatus(config, existingDeployments)
+	}
+	activeDeployment := deployutil.ActiveDeployment(config, existingDeployments)
+	activeDeploymentExists := activeDeployment != nil
+	activeDeploymentIsLatest := activeDeploymentExists && activeDeployment.Name == latestDeployment.Name
+
+	if activeDeploymentIsLatest {
+		// the latest deployment config was deployed sucessfully
+		glog.Info("reconciling marathon deployment: activeDeploymentIsLatest")
+
+		// the latest deployment is completed, therefore we just need to ask marathon to deploy again with
+		// updated replica number in the latest config
+		replicas, hasReplicas := deployutil.DeploymentReplicas(latestDeployment)
+
+		glog.Infof("reconciling marathon deployment: activeDeploymentIsLatest: (%v, %d, %d)", hasReplicas, replicas, config.Spec.Replicas)
+
+		if !hasReplicas || (hasReplicas && replicas != config.Spec.Replicas) {
+			copied, err := deployutil.DeploymentConfigDeepCopy(config)
+			if err != nil {
+				return err
+			}
+			copied.Status.LatestVersion++
+			if copied.Annotations == nil {
+				copied.Annotations = make(map[string]string)
+			}
+			copied.Annotations[deployapi.DeploymentMarathonScaleAnnotation] = strconv.FormatInt(copied.Status.LatestVersion, 10)
+			_, err = c.dn.DeploymentConfigs(copied.Namespace).Update(copied)
+			if err != nil {
+				return err
+			}
+		}
+	} else {
+		// the latest deployment config failed
+
+		isDeploymentCancled := deployutil.IsDeploymentCancelled(latestDeployment)
+		if isDeploymentCancled {
+			// if it was canceled, usually the deployment hangs because of permanent error e.g.g the unsatisfication
+			// of deployment constraint), then we rollback automatically,
+			if activeDeploymentExists {
+				glog.V(4).Info("reconciling marathon deployment: activeDeploymentExists")
+
+				// the latest deployment is failed but there exists a previously completed deployment
+				// we have to ask marathon to cancel latest deployment and rollback to that deployment
+				// Set up the rollback and generate a new rolled back config.
+				rollback := &deployapi.DeploymentConfigRollback{
+					Name: config.Name,
+					Spec: deployapi.DeploymentConfigRollbackSpec{
+						From: kapi.ObjectReference{
+							Name: activeDeployment.Name,
+						},
+						IncludeTemplate:        true,
+						IncludeTriggers:        true,
+						IncludeStrategy:        true,
+						IncludeReplicationMeta: true,
+					},
+				}
+				newConfig, err := c.dn.DeploymentConfigs(config.Namespace).Rollback(rollback)
+				if err != nil {
+					return err
+				}
+				if newConfig.Annotations == nil {
+					newConfig.Annotations = make(map[string]string)
+				}
+				newConfig.Annotations[deployapi.DeploymentMarathonReconcileAnnotation] = strconv.FormatInt(newConfig.Status.LatestVersion, 10)
+
+				_, err = c.dn.DeploymentConfigs(config.Namespace).Update(newConfig)
+				if err != nil {
+					return err
+				}
+			} else {
+				glog.V(4).Info("reconciling marathon deployment: other cases")
+
+				// none of previous deployments is sucessfuly.
+				// we have to ask marathon to cancel latest deployment
+				copied, err := deployutil.DeploymentConfigDeepCopy(config)
+				if err != nil {
+					return err
+				}
+				copied.Status.LatestVersion++
+				if copied.Annotations == nil {
+					copied.Annotations = make(map[string]string)
+				}
+				copied.Annotations[deployapi.DeploymentMarathonReconcileAnnotation] = strconv.FormatInt(config.Status.LatestVersion, 10)
+				_, err = c.dn.DeploymentConfigs(copied.Namespace).Update(copied)
+				if err != nil {
+					return err
+				}
+			}
+		} else {
+			// otherwise it's failed (usually caused by temporary error, e.g communcation failure or concurrent rejection from marathon),
+			// we leave the failed deployment as it's, and expect user to rollback manually or resume deployment by retrying it
+			glog.V(4).Info("reconciling marathon deployment: do nothing for failed deployment")
+
+		}
+	}
+
+	// As the deployment configuration has changed, we need to make sure to clean
+	// up old deployments if we have now reached our deployment history quota
+	if err := c.cleanupOldDeployments(existingDeployments, config); err != nil {
+		c.recorder.Eventf(config, kapi.EventTypeWarning, "DeploymentCleanupFailed", "Couldn't clean up deployments: %v", err)
+	}
+
+	return nil
 }

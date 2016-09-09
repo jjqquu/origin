@@ -172,7 +172,9 @@ func canTrigger(config, decoded *deployapi.DeploymentConfig) (bool, []deployapi.
 	if deployutil.HasChangeTrigger(config) && !canTriggerByImageChange {
 		// This is the initial deployment or the config has a template change. We need to
 		// kick a new deployment.
-		if config.Status.LatestVersion == 0 || !kapi.Semantic.DeepEqual(config.Spec.Template, decoded.Spec.Template) {
+		if (config.Status.LatestVersion == 0) ||
+			(config.Spec.Template != nil && !kapi.Semantic.DeepEqual(config.Spec.Template, decoded.Spec.Template)) ||
+			(config.Spec.MarathonAppTemplate != nil && !kapi.Semantic.DeepEqual(config.Spec.MarathonAppTemplate, decoded.Spec.MarathonAppTemplate)) {
 			canTriggerByConfigChange = true
 			causes = []deployapi.DeploymentCause{{Type: deployapi.DeploymentTriggerOnConfigChange}}
 		}

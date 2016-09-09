@@ -92,6 +92,8 @@ var map_DeploymentConfigSpec = map[string]string{
 	"paused":               "Paused indicates that the deployment config is paused resulting in no new deployments on template changes or changes in the template caused by other triggers.",
 	"selector":             "Selector is a label query over pods that should match the Replicas count.",
 	"template":             "Template is the object that describes the pod that will be created if insufficient replicas are detected.",
+	"site":                 "Site is the identifier that specifies the site where deployment will be conducted",
+	"marathonAppTemplate":  "MarathonAppTemplate is the object that describes the application that will be created by mesos Marathon scheduler",
 }
 
 func (DeploymentConfigSpec) SwaggerDoc() map[string]string {
@@ -207,6 +209,142 @@ var map_LifecycleHook = map[string]string{
 
 func (LifecycleHook) SwaggerDoc() map[string]string {
 	return map_LifecycleHook
+}
+
+var map_MarathonApplication = map[string]string{
+	"":                      "Application is the definition for an application in marathon",
+	"id":                    "Unique identifier for the app consisting of a series of names separated by slashes.",
+	"cmd":                   "The command that is executed.",
+	"args":                  "An array of strings that represents an alternative mode of specifying the command to run.",
+	"constraints":           "Valid constraint operators are one of [\"UNIQUE\", \"CLUSTER\", \"GROUP_BY\"].",
+	"container":             "Container is the definition for a container type in marathon Additional data passed to the containerizer on application launch. These consist of a type, zero or more volumes, and additional type-specific options. Volumes and type are optional (the default type is DOCKER).",
+	"cpus":                  "The number of CPU`s this application needs per instance.",
+	"disk":                  "The number of DISK`s this application needs per instance.",
+	"env":                   "Key value pairs that get added to the environment variables of the process to start.",
+	"executor":              "The executor to use to launch this application.",
+	"healthChecks":          "An array of checks to be performed on running tasks to determine if they are operating as expected. Health checks begin immediately upon task launch.",
+	"mem":                   "The amount of memory in MB that is needed for the application per instance.",
+	"ports":                 "Deprecated . Use portDefinitions instead.",
+	"requirePorts":          "Normally, the host ports of your tasks are automatically assigned. This corresponds to the requirePorts value false which is the default. If you need more control and want to specify your host ports in advance, you can set requirePorts to true. This way the ports you have specified are used as host ports. That also means that Marathon can schedule the associated tasks only on hosts that have the specified ports available.",
+	"backoffSeconds":        "Configures exponential backoff behavior when launching potentially sick apps. This prevents sandboxes associated with consecutively failing tasks from filling up the hard disk on Mesos slaves. The backoff period is multiplied by the factor for each consecutive failure until it reaches maxLaunchDelaySeconds. This applies also to tasks that are killed due to failing too many health checks. backoff seconds when failure happens",
+	"backoffFactor":         "backoff factor used to multiplied by backoff seconds",
+	"maxLaunchDelaySeconds": "Max launch delay seconds when launching potentially sick apps",
+	"dependencies":          "A list of services upon which this application depends. An order is derived from the dependencies for performing start/stop and upgrade of the application. For example, an application /a relies on the services /b which itself relies on /c. To start all 3 applications, first /c is started than /b than /a.",
+	"user":                  "User to launch the application container",
+	"upgradeStrategy":       "During an upgrade all instances of an application get replaced by a new version.",
+	"uris":                  "Since v0.15.0: Deprecated . Use fetch instead.",
+	"labels":                "Attaching metadata to apps can be useful to expose additional information to other services, so we added the ability to place labels on apps (for example, you could label apps \"staging\" and \"production\" to mark services by their position in the pipeline).",
+	"acceptedResourceRoles": "Optional. A list of resource roles. Marathon considers only resource offers with roles in this list for launching tasks of this app. If you do not specify this, Marathon considers all resource offers with roles that have been configured by the --default_accepted_resource_roles command line flag. If no --default_accepted_resource_roles was given on startup, Marathon considers all resource offers.",
+	"fetch":                 "The list of URIs to fetch before the task starts.",
+}
+
+func (MarathonApplication) SwaggerDoc() map[string]string {
+	return map_MarathonApplication
+}
+
+var map_MarathonConstraint = map[string]string{
+	"":           "Constraint is the container placement constraint for scheduling an application in marathon",
+	"constraint": "Valid constraint operators are one of [\"UNIQUE\", \"CLUSTER\", \"GROUP_BY\"].",
+}
+
+func (MarathonConstraint) SwaggerDoc() map[string]string {
+	return map_MarathonConstraint
+}
+
+var map_MarathonContainer = map[string]string{
+	"":        "Container is the definition for a container type in marathon",
+	"type":    "\n container types, currelty \"docker\"/\"mesos\" supported",
+	"docker":  "Docker is the docker definition from a marathon application",
+	"volumes": "Volume is the docker volume details associated to the container",
+}
+
+func (MarathonContainer) SwaggerDoc() map[string]string {
+	return map_MarathonContainer
+}
+
+var map_MarathonDocker = map[string]string{
+	"":               "Docker is the docker definition from a marathon application",
+	"forcePullImage": "ForcePullImage Flag force Docker to pull the image before launching each task, by default false.",
+	"image":          "Image name of the docker container",
+	"network":        "Network mode, currently support \"bridge\"/\"host\"/\"none\"",
+	"parameters":     "The parameters object allows users to supply arbitrary command-line options for the docker run command executed by the Mesos containerizer.",
+	"portMappings":   "PortMapping is the portmapping structure between container and mesos",
+	"privileged":     "Privileged flag allows users to run containers in privileged mode. This flag is false by default.",
+}
+
+func (MarathonDocker) SwaggerDoc() map[string]string {
+	return map_MarathonDocker
+}
+
+var map_MarathonFetch = map[string]string{
+	"":           "Fetch will download URI before task starts",
+	"uri":        "URI to be fetched by Mesos fetcher module",
+	"executable": "Set fetched artifact as executable",
+	"extract":    "Extract fetched artifact if supported by Mesos fetcher mod",
+	"cache":      "Cache fetched artifact if supported by Mesos fetcher module",
+}
+
+func (MarathonFetch) SwaggerDoc() map[string]string {
+	return map_MarathonFetch
+}
+
+var map_MarathonHealthCheck = map[string]string{
+	"":          "Health checks to be performed by marathon on running tasks to determine if they are operating as expected.",
+	"command":   "Command to run in order to determine the health of a task.",
+	"portIndex": "(Optional. Default: 0): Index in this app's ports array to be used for health requests.",
+	"path":      "(Optional. Default: \"/\"): Path to endpoint exposed by the task that will provide health status.",
+	"maxConsecutiveFailures": "(Optional. Default: 3) : Number of consecutive health check failures after which the unhealthy task should be killed.",
+	"protocol":               "\n (Optional. Default: \"HTTP\"): Protocol of the requests to be performed. One of \"HTTP\", \"HTTPS\", \"TCP\", or \"Command\".",
+	"gracePeriodSeconds":     "(Optional. Default: 15): Health check failures are ignored within this number of seconds of the task being started or until the task becomes healthy for the first time.",
+	"intervalSeconds":        "(Optional. Default: 10): Number of seconds to wait between health checks.",
+	"timeoutSeconds":         "(Optional. Default: 20): Number of seconds after which a health check is considered a failure regardless of the response.",
+}
+
+func (MarathonHealthCheck) SwaggerDoc() map[string]string {
+	return map_MarathonHealthCheck
+}
+
+var map_MarathonParameters = map[string]string{
+	"":      "Parameters is the parameters to pass to the docker client when creating the container",
+	"key":   "Paramenter key",
+	"value": "Paramenter value",
+}
+
+func (MarathonParameters) SwaggerDoc() map[string]string {
+	return map_MarathonParameters
+}
+
+var map_MarathonPortMapping = map[string]string{
+	"":              "PortMapping is the portmapping structure between container and mesos",
+	"containerPort": "container port refers to the port the application listens to inside of the container.",
+	"hostPort":      "hostPort is optional and defaults to 0. 0 retains the traditional meaning in Marathon, which is \"a random port from the range included in the Mesos resource offer\". The resulting host ports for each task are exposed via the task details in the REST API and the Marathon web UI.",
+	"servicePort":   "\n is a helper port intended for doing service discovery using a well-known port per service. The assigned servicePort value is not used/interpreted by Marathon itself but supposed to used by load balancer infrastructure.",
+	"protocol":      "The \"protocol\" parameter is optional and defaults to \"tcp\". Its possible values are \"tcp\" and \"udp\"",
+}
+
+func (MarathonPortMapping) SwaggerDoc() map[string]string {
+	return map_MarathonPortMapping
+}
+
+var map_MarathonUpgradeStrategy = map[string]string{
+	"": "The upgradeStrategy controls how Marathon stops old versions and launches new versions.",
+	"minimumHealthCapacity": "\n (Optional. Default: 1.0) - a number between 0and 1 that is multiplied with the instance count. This is the minimum number of healthy nodes that do not sacrifice overall application purpose. Marathon will make sure, during the upgrade process, that at any point of time this number of healthy instances are up.",
+	"maximumOverCapacity":   "(Optional. Default: 1.0) - a number between 0 and 1 which is multiplied with the instance count. This is the maximum number of additional instances launched at any point of time during the upgrade process.",
+}
+
+func (MarathonUpgradeStrategy) SwaggerDoc() map[string]string {
+	return map_MarathonUpgradeStrategy
+}
+
+var map_MarathonVolume = map[string]string{
+	"":              "Volume is the docker volume details associated to the container",
+	"containerPath": "container path refers to the volume path the application accesses inside of the container.",
+	"hostPath":      "host path refers to the local host volume path to be mounted by the container.",
+	"mode":          "Read/Write mode of the mounted volume inside of the container. \"R\"/\"W\"/\"RW\"",
+}
+
+func (MarathonVolume) SwaggerDoc() map[string]string {
+	return map_MarathonVolume
 }
 
 var map_RecreateDeploymentStrategyParams = map[string]string{

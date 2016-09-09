@@ -57,6 +57,7 @@ DIR_BLACKLIST='./hack
 ./pkg/project
 ./pkg/quota
 ./pkg/router
+./pkg/site
 ./pkg/sdn
 ./pkg/security
 ./pkg/serviceaccounts

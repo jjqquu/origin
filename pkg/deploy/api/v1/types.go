@@ -54,6 +54,9 @@ const (
 	DeploymentStrategyTypeCustom DeploymentStrategyType = "Custom"
 	// DeploymentStrategyTypeRolling uses the Kubernetes RollingUpdater.
 	DeploymentStrategyTypeRolling DeploymentStrategyType = "Rolling"
+
+	// DeploymentStrategyTypeMarathon is to deploy to marathon site
+	DeploymentStrategyTypeMarathon DeploymentStrategyType = "Marathon"
 )
 
 // CustomDeploymentStrategyParams are the input to the Custom deployment strategy.
@@ -232,6 +235,16 @@ const (
 	// DeploymentInstantiatedAnnotation indicates that the deployment has been instantiated.
 	// The annotation value does not matter and its mere presence indicates instantiation.
 	DeploymentInstantiatedAnnotation = "openshift.io/deployment.instantiated"
+
+	// DeploymentMarathonRetryAnnotation indicates that the marathon deployment has been
+	// asked to retry and the annotation value is the deployment config version
+	DeploymentMarathonRetryAnnotation = "openshift.io/deployment.marathon.retry"
+	// DeploymentMarathonScaleAnnotation indicates that the marathon deployment has been
+	// asked to scale up/down and the annotation value is the deployment config version
+	DeploymentMarathonScaleAnnotation = "openshift.io/deployment.marathon.scale"
+	// DeploymentMarathonReconcileAnnotation indicates that the marathon deployment has been
+	// asked to reconciile and the annotation value is the deployment config version
+	DeploymentMarathonReconcileAnnotation = "openshift.io/deployment.marathon.reconcile"
 )
 
 // +genclient=true
@@ -293,6 +306,13 @@ type DeploymentConfigSpec struct {
 	// Template is the object that describes the pod that will be created if
 	// insufficient replicas are detected.
 	Template *kapi.PodTemplateSpec `json:"template,omitempty" protobuf:"bytes,8,opt,name=template"`
+
+	// Site is the identifier that specifies the site where deployment will be conducted
+	Site string `json:"site,omitempty" protobuf:"bytes,10,opt,name=site"`
+
+	// MarathonAppTemplate is the object that describes the application that will be created
+	// by mesos Marathon scheduler
+	MarathonAppTemplate *MarathonApplication `json:"marathonAppTemplate,omitempty" protobuf:"bytes,11,opt,name=marathonAppTemplate"`
 }
 
 // DeploymentConfigStatus represents the current deployment state.
@@ -458,4 +478,205 @@ type DeploymentLogOptions struct {
 
 	// Version of the deployment for which to view logs.
 	Version *int64 `json:"version,omitempty" protobuf:"varint,10,opt,name=version"`
+}
+
+// Constraint is the container placement constraint for scheduling an application in marathon
+type MarathonConstraint struct {
+	// Valid constraint operators are one of ["UNIQUE", "CLUSTER", "GROUP_BY"].
+	Constraint []string `json:"constraint,omitempty" protobuf:"bytes,1,rep,name=constraint"`
+}
+
+// Application is the definition for an application in marathon
+type MarathonApplication struct {
+	// Unique identifier for the app consisting of a series of names separated by slashes.
+	ID string `json:"id,omitempty" protobuf:"bytes,1,opt,name=id"`
+
+	// The command that is executed.
+	Cmd *string `json:"cmd,omitempty" protobuf:"bytes,2,opt,name=cmd"`
+
+	// An array of strings that represents an alternative mode of specifying the command to run.
+	Args []string `json:"args,omitempty" protobuf:"bytes,3,rep,name=args"`
+
+	// Valid constraint operators are one of ["UNIQUE", "CLUSTER", "GROUP_BY"].
+	Constraints []MarathonConstraint `json:"constraints,omitempty" protobuf:"bytes,4,rep,name=constraints"`
+
+	// Container is the definition for a container type in marathon
+	// Additional data passed to the containerizer on application launch. These consist of a type, zero or more volumes, and additional type-specific options. Volumes and type are optional (the default type is DOCKER).
+	Container *MarathonContainer `json:"container,omitempty" protobuf:"bytes,5,opt,name=container"`
+
+	// The number of CPU`s this application needs per instance.
+	CPUs *float64 `json:"cpus,omitempty" protobuf:"bytes,6,opt,name=cpus"`
+
+	// The number of DISK`s this application needs per instance.
+	Disk *float64 `json:"disk,omitempty" protobuf:"bytes,7,opt,name=disk"`
+
+	// Key value pairs that get added to the environment variables of the process to start.
+	Env map[string]string `json:"env,omitempty" protobuf:"bytes,8,opt,name=env"`
+
+	// The executor to use to launch this application.
+	Executor *string `json:"executor,omitempty" protobuf:"bytes,9,opt,name=executor"`
+
+	// An array of checks to be performed on running tasks to determine if they are operating as expected. Health checks begin immediately upon task launch.
+	HealthChecks []MarathonHealthCheck `json:"healthChecks,omitempty" protobuf:"bytes,10,rep,name=healthChecks"`
+
+	// The amount of memory in MB that is needed for the application per instance.
+	Mem *float64 `json:"mem,omitempty" protobuf:"bytes,11,opt,name=mem"`
+
+	// Deprecated . Use portDefinitions instead.
+	Ports []int32 `json:"ports" protobuf:"bytes,12,rep,name=ports"`
+
+	// Normally, the host ports of your tasks are automatically assigned. This corresponds to the requirePorts value false which is the default.
+	// If you need more control and want to specify your host ports in advance, you can set requirePorts to true. This way the ports you have specified are used as host ports. That also means that Marathon can schedule the associated tasks only on hosts that have the specified ports available.
+	RequirePorts *bool `json:"requirePorts,omitempty" protobuf:"varint,13,opt,name=requirePorts"`
+
+	// Configures exponential backoff behavior when launching potentially sick apps. This prevents sandboxes associated with consecutively failing tasks from filling up the hard disk on Mesos slaves. The backoff period is multiplied by the factor for each consecutive failure until it reaches maxLaunchDelaySeconds. This applies also to tasks that are killed due to failing too many health checks.
+	// backoff seconds when failure happens
+	BackoffSeconds *float64 `json:"backoffSeconds,omitempty" protobuf:"bytes,14,opt,name=backoffSeconds"`
+
+	// backoff factor used to multiplied by backoff seconds
+	BackoffFactor *float64 `json:"backoffFactor,omitempty" protobuf:"bytes,15,opt,name=backoffFactor"`
+
+	// Max launch delay seconds when launching potentially sick apps
+	MaxLaunchDelaySeconds *float64 `json:"maxLaunchDelaySeconds,omitempty" protobuf:"bytes,16,opt,name=maxLaunchDelaySeconds"`
+
+	// A list of services upon which this application depends. An order is derived from the dependencies for performing start/stop and upgrade of the application. For example, an application /a relies on the services /b which itself relies on /c. To start all 3 applications, first /c is started than /b than /a.
+	Dependencies []string `json:"dependencies" protobuf:"bytes,17,rep,name=dependencies"`
+
+	// User to launch the application container
+	User string `json:"user,omitempty" protobuf:"bytes,18,opt,name=user"`
+
+	// During an upgrade all instances of an application get replaced by a new version.
+	UpgradeStrategy *MarathonUpgradeStrategy `json:"upgradeStrategy,omitempty" protobuf:"bytes,19,opt,name=upgradeStrategy"`
+
+	// Since v0.15.0: Deprecated . Use fetch instead.
+	Uris []string `json:"uris" protobuf:"bytes,20,rep,name=uris"`
+
+	// Attaching metadata to apps can be useful to expose additional information to other services, so we added the ability to place labels on apps (for example, you could label apps "staging" and "production" to mark services by their position in the pipeline).
+	Labels map[string]string `json:"labels,omitempty" protobuf:"bytes,21,opt,name=labels"`
+
+	// Optional. A list of resource roles. Marathon considers only resource offers with roles in this list for launching tasks of this app. If you do not specify this, Marathon considers all resource offers with roles that have been configured by the --default_accepted_resource_roles command line flag. If no --default_accepted_resource_roles was given on startup, Marathon considers all resource offers.
+	AcceptedResourceRoles []string `json:"acceptedResourceRoles,omitempty" protobuf:"bytes,22,rep,name=acceptedResourceRoles"`
+
+	// The list of URIs to fetch before the task starts.
+	Fetch []MarathonFetch `json:"fetch" protobuf:"bytes,23,rep,name=fetch"`
+}
+
+// Container is the definition for a container type in marathon
+type MarathonContainer struct {
+	//  container types, currelty "docker"/"mesos" supported
+	Type string `json:"type,omitempty" protobuf:"bytes,1,opt,name=type"`
+
+	// Docker is the docker definition from a marathon application
+	Docker *MarathonDocker `json:"docker,omitempty" protobuf:"bytes,2,opt,name=docker"`
+
+	// Volume is the docker volume details associated to the container
+	Volumes []MarathonVolume `json:"volumes,omitempty" protobuf:"bytes,3,rep,name=volumes"`
+}
+
+// Docker is the docker definition from a marathon application
+type MarathonDocker struct {
+	// ForcePullImage Flag force Docker to pull the image before launching each task, by default false.
+	ForcePullImage *bool `json:"forcePullImage,omitempty" protobuf:"varint,1,opt,name=forcePullImage"`
+
+	// Image name of the docker container
+	Image string `json:"image,omitempty" protobuf:"bytes,2,opt,name=image"`
+
+	// Network mode, currently support "bridge"/"host"/"none"
+	Network string `json:"network,omitempty" protobuf:"bytes,3,opt,name=network"`
+
+	// The parameters object allows users to supply arbitrary command-line options for the docker run command executed by the Mesos containerizer.
+	Parameters []MarathonParameters `json:"parameters,omitempty" protobuf:"bytes,4,rep,name=parameters"`
+
+	// PortMapping is the portmapping structure between container and mesos
+	PortMappings []MarathonPortMapping `json:"portMappings,omitempty" protobuf:"bytes,5,rep,name=portMappings"`
+
+	// Privileged flag allows users to run containers in privileged mode. This flag is false by default.
+	Privileged *bool `json:"privileged,omitempty" protobuf:"varint,6,opt,name=privileged"`
+}
+
+// Volume is the docker volume details associated to the container
+type MarathonVolume struct {
+	// container path refers to the volume path the application accesses inside of the container.
+	ContainerPath string `json:"containerPath,omitempty" protobuf:"bytes,1,opt,name=containerPath"`
+
+	// host path refers to the local host volume path to be mounted by the container.
+	HostPath string `json:"hostPath,omitempty" protobuf:"bytes,2,opt,name=hostPath"`
+
+	// Read/Write mode of the mounted volume inside of the container. "R"/"W"/"RW"
+	Mode string `json:"mode,omitempty" protobuf:"bytes,3,opt,name=mode"`
+}
+
+// PortMapping is the portmapping structure between container and mesos
+type MarathonPortMapping struct {
+	// container port refers to the port the application listens to inside of the container.
+	ContainerPort int32 `json:"containerPort,omitempty" protobuf:"varint,1,opt,name=containerPort"`
+
+	// hostPort is optional and defaults to 0. 0 retains the traditional meaning in Marathon, which is "a random port from the range included in the Mesos resource offer". The resulting host ports for each task are exposed via the task details in the REST API and the Marathon web UI.
+	HostPort int32 `json:"hostPort" protobuf:"varint,2,opt,name=hostPort"`
+
+	//  is a helper port intended for doing service discovery using a well-known port per service. The assigned servicePort value is not used/interpreted by Marathon itself but supposed to used by load balancer infrastructure.
+	ServicePort int32 `json:"servicePort,omitempty" protobuf:"varint,3,opt,name=servicePort"`
+
+	// The "protocol" parameter is optional and defaults to "tcp". Its possible values are "tcp" and "udp"
+	Protocol string `json:"protocol,omitempty" protobuf:"bytes,4,opt,name=protocol"`
+}
+
+// Parameters is the parameters to pass to the docker client when creating the container
+type MarathonParameters struct {
+	// Paramenter key
+	Key string `json:"key,omitempty" protobuf:"bytes,1,opt,name=key"`
+
+	// Paramenter value
+	Value string `json:"value,omitempty" protobuf:"bytes,2,opt,name=value"`
+}
+
+// The upgradeStrategy controls how Marathon stops old versions and launches new versions.
+type MarathonUpgradeStrategy struct {
+	//  (Optional. Default: 1.0) - a number between 0and 1 that is multiplied with the instance count. This is the minimum number of healthy nodes that do not sacrifice overall application purpose. Marathon will make sure, during the upgrade process, that at any point of time this number of healthy instances are up.
+	MinimumHealthCapacity float64 `json:"minimumHealthCapacity" protobuf:"bytes,1,opt,name=minimumHealthCapacity"`
+
+	// (Optional. Default: 1.0) - a number between 0 and 1 which is multiplied with the instance count. This is the maximum number of additional instances launched at any point of time during the upgrade process.
+	MaximumOverCapacity float64 `json:"maximumOverCapacity" protobuf:"bytes,2,opt,name=maximumOverCapacity"`
+}
+
+// Health checks to be performed by marathon on running tasks to determine if they are operating as expected.
+type MarathonHealthCheck struct {
+	// Command to run in order to determine the health of a task.
+	Command *string `json:"command,omitempty" protobuf:"bytes,1,opt,name=command"`
+
+	// (Optional. Default: 0): Index in this app's ports array to be used for health requests.
+	PortIndex *int32 `json:"portIndex,omitempty" protobuf:"varint,2,opt,name=portIndex"`
+
+	// (Optional. Default: "/"): Path to endpoint exposed by the task that will provide health status.
+	Path *string `json:"path,omitempty" protobuf:"bytes,3,opt,name=path"`
+
+	// (Optional. Default: 3) : Number of consecutive health check failures after which the unhealthy task should be killed.
+	MaxConsecutiveFailures *int32 `json:"maxConsecutiveFailures,omitempty" protobuf:"varint,4,opt,name=maxConsecutiveFailures"`
+
+	//  (Optional. Default: "HTTP"): Protocol of the requests to be performed. One of "HTTP", "HTTPS", "TCP", or "Command".
+	Protocol string `json:"protocol,omitempty" protobuf:"bytes,5,opt,name=protocol"`
+
+	// (Optional. Default: 15): Health check failures are ignored within this number of seconds of the task being started or until the task becomes healthy for the first time.
+	GracePeriodSeconds int32 `json:"gracePeriodSeconds,omitempty" protobuf:"varint,6,opt,name=gracePeriodSeconds"`
+
+	// (Optional. Default: 10): Number of seconds to wait between health checks.
+	IntervalSeconds int32 `json:"intervalSeconds,omitempty" protobuf:"varint,7,opt,name=intervalSeconds"`
+
+	// (Optional. Default: 20): Number of seconds after which a health check is considered a failure regardless of the response.
+	TimeoutSeconds int32 `json:"timeoutSeconds,omitempty" protobuf:"varint,8,opt,name=timeoutSeconds"`
+}
+
+// Fetch will download URI before task starts
+type MarathonFetch struct {
+	// URI to be fetched by Mesos fetcher module
+	URI string `json:"uri" protobuf:"bytes,1,opt,name=uri"`
+
+	// Set fetched artifact as executable
+	Executable bool `json:"executable" protobuf:"varint,2,opt,name=Executable"`
+
+	// Extract fetched artifact if supported by Mesos fetcher mod
+	Extract bool `json:"extract" protobuf:"varint,3,opt,name=extract"`
+
+	// Cache fetched artifact if supported by Mesos fetcher module
+	Cache bool `json:"cache" protobuf:"varint,4,opt,name=cache"`
 }

@@ -50,6 +50,7 @@ images=(
   openshift/origin-f5-router
   openshift/origin-egress-router
   openshift/origin-siteagent
+  openshift/origin-marathon-deployer
   openshift/origin-recycler
   openshift/origin-gitserver
   openshift/hello-openshift

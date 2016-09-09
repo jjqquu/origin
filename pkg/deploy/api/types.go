@@ -57,6 +57,8 @@ const (
 	DeploymentStrategyTypeCustom DeploymentStrategyType = "Custom"
 	// DeploymentStrategyTypeRolling uses the Kubernetes RollingUpdater.
 	DeploymentStrategyTypeRolling DeploymentStrategyType = "Rolling"
+	// DeploymentStrategyTypeMarathon is to deploy to marathon site
+	DeploymentStrategyTypeMarathon DeploymentStrategyType = "Marathon"
 )
 
 // CustomDeploymentStrategyParams are the input to the Custom deployment strategy.
@@ -251,6 +253,16 @@ const (
 	MidHookPodSuffix = "hook-mid"
 	// PostHookPodSuffix is the suffix added to all post hook pods
 	PostHookPodSuffix = "hook-post"
+
+	// DeploymentMarathonRetryAnnotation indicates that the marathon deployment has been
+	// asked to retry and the annotation value is the deployment config version
+	DeploymentMarathonRetryAnnotation = "openshift.io/deployment.marathon.retry"
+	// DeploymentMarathonScaleAnnotation indicates that the marathon deployment has been
+	// asked to scale up/down and the annotation value is the deployment config version
+	DeploymentMarathonScaleAnnotation = "openshift.io/deployment.marathon.scale"
+	// DeploymentMarathonReconcileAnnotation indicates that the marathon deployment has been
+	// asked to reconciile and the annotation value is the deployment config version
+	DeploymentMarathonReconcileAnnotation = "openshift.io/deployment.marathon.reconcile"
 )
 
 // These constants represent the various reasons for cancelling a deployment
@@ -329,6 +341,13 @@ type DeploymentConfigSpec struct {
 	// Template is the object that describes the pod that will be created if
 	// insufficient replicas are detected.
 	Template *kapi.PodTemplateSpec
+
+	// Site is the identifier that specifies the site where deployment will be conducted
+	Site string
+
+	// MarathonAppTemplate is the object that describes the application that will be created
+	// by mesos Marathon scheduler
+	MarathonAppTemplate *MarathonApplication
 }
 
 // DeploymentConfigStatus represents the current deployment state.
@@ -493,4 +512,205 @@ type DeploymentLogOptions struct {
 
 	// Version of the deployment for which to view logs.
 	Version *int64
+}
+
+// Constraint is the container placement constraint for scheduling an application in marathon
+type MarathonConstraint struct {
+	// Valid constraint operators are one of ["UNIQUE", "CLUSTER", "GROUP_BY"].
+	Constraint []string
+}
+
+// Application is the definition for an application in marathon
+type MarathonApplication struct {
+	// Unique identifier for the app consisting of a series of names separated by slashes.
+	ID string
+
+	// The command that is executed.
+	Cmd *string
+
+	// An array of strings that represents an alternative mode of specifying the command to run
+	Args []string
+
+	// Valid constraint operators are one of ["UNIQUE", "CLUSTER", "GROUP_BY"].
+	Constraints []MarathonConstraint
+
+	// Container is the definition for a container type in marathon
+	// Additional data passed to the containerizer on application launch. These consist of a type , zero or more volumes, and additional type-specific options. Volumes and type are optional (he default type is DOCKER).
+	Container *MarathonContainer
+
+	// The number of CPU`s this application needs per instance.
+	CPUs *float64
+
+	// The number of DISK`s this application needs per instance.
+	Disk *float64
+
+	// Key value pairs that get added to the environment variables of the process to start.
+	Env map[string]string
+
+	// The executor to use to launch this application.
+	Executor *string
+
+	// An array of checks to be performed on running tasks to determine if they are operating as expected. Health checks begin immediately upon task launch.
+	HealthChecks []MarathonHealthCheck
+
+	// The amount of memory in MB that is needed for the application per instance.
+	Mem *float64
+
+	// Deprecated . Use portDefinitions instead.
+	Ports []int32
+
+	// Normally, the host ports of your tasks are automatically assigned. This corresponds to the requirePorts value false which is the default.
+	// If you need more control and want to specify your host ports in advance, you can set requirePorts to true. This way the ports you have specified are used as host ports. That also means that Marathon can schedule the associated tasks only on hosts that have the specified ports available.
+	RequirePorts *bool
+
+	// Configures exponential backoff behavior when launching potentially sick apps. This prevents sandboxes associated with consecutively failing tasks from filling up the hard disk on Mesos slaves. The backoff period is multiplied by the factor for each consecutive failure until it reaches maxLaunchDelaySeconds. This applies also to tasks that are killed due to failing too many health checks.
+	// backoff seconds when failure happens
+	BackoffSeconds *float64
+
+	// backoff factor used to multiplied by backoff seconds
+	BackoffFactor *float64
+
+	// Max launch delay seconds when launching potentially sick apps
+	MaxLaunchDelaySeconds *float64
+
+	// A list of services upon which this application depends. An order is derived from the dependencies for performing start/stop and upgrade of the application. For example, an application /a relies on the services /b which itself relies on /c. To start all 3 applications, first /c is started than /b than /a.
+	Dependencies []string
+
+	// User to launch the application container
+	User string
+
+	// During an upgrade all instances of an application get replaced by a new version.
+	UpgradeStrategy *MarathonUpgradeStrategy
+
+	// Since v0.15.0: Deprecated . Use fetch instead.
+	Uris []string
+
+	// Attaching metadata to apps can be useful to expose additional information to other services, so we added the ability to place labels on apps (for example, you could label apps "staging" and "production" to mark services by their position in the pipeline).
+	Labels map[string]string
+
+	// Optional. A list of resource roles. Marathon considers only resource offers with roles in this list for launching tasks of this app. If you do not specify this, Marathon considers all resource offers with roles that have been configured by the --default_accepted_resource_roles command line flag. If no --default_accepted_resource_roles was given on startup, Marathon considers all resource offers.
+	AcceptedResourceRoles []string
+
+	// The list of URIs to fetch before the task starts.
+	Fetch []MarathonFetch
+}
+
+// Container is the definition for a container type in marathon
+type MarathonContainer struct {
+	//  container types, currelty "docker"/"mesos" supported
+	Type string
+
+	// Docker is the docker definition from a marathon application
+	Docker *MarathonDocker
+
+	// Volume is the docker volume details associated to the container
+	Volumes []MarathonVolume
+}
+
+// Docker is the docker definition from a marathon application
+type MarathonDocker struct {
+	// ForcePullImage Flag force Docker to pull the image before launching each task, by default false.
+	ForcePullImage *bool
+
+	// Image name of the docker container
+	Image string
+
+	// Network mode, currently support "bridge"/"host"/"none"
+	Network string
+
+	// The parameters object allows users to supply arbitrary command-line options for the docker run command executed by the Mesos containerizer.
+	Parameters []MarathonParameters
+
+	// PortMapping is the portmapping structure between container and mesos
+	PortMappings []MarathonPortMapping
+
+	// Privileged flag allows users to run containers in privileged mode. This flag is false by default.
+	Privileged *bool
+}
+
+// Volume is the docker volume details associated to the container
+type MarathonVolume struct {
+	// container path refers to the volume path the application accesses inside of the container.
+	ContainerPath string
+
+	// host path refers to the local host volume path to be mounted by the container.
+	HostPath string
+
+	// Read/Write mode of the mounted volume inside of the container. "R"/"W"/"RW"
+	Mode string
+}
+
+// PortMapping is the portmapping structure between container and mesos
+type MarathonPortMapping struct {
+	// container port refers to the port the application listens to inside of the container.
+	ContainerPort int32
+
+	// hostPort is optional and defaults to 0. 0 retains the traditional meaning in Marathon, which is "a random port from the range included in the Mesos resource offer". The resulting host ports for each task are exposed via the task details in the REST API and the Marathon web UI.
+	HostPort int32
+
+	//  is a helper port intended for doing service discovery using a well-known port per service. The assigned servicePort value is not used/interpreted by Marathon itself but supposed to used by load balancer infrastructure.
+	ServicePort int32
+
+	// The "protocol" parameter is optional and defaults to "tcp". Its possible values are "tcp" and "udp"
+	Protocol string
+}
+
+// Parameters is the parameters to pass to the docker client when creating the container
+type MarathonParameters struct {
+	// Paramenter key
+	Key string
+
+	// Paramenter value
+	Value string
+}
+
+// The upgradeStrategy controls how Marathon stops old versions and launches new versions.
+type MarathonUpgradeStrategy struct {
+	//  (Optional. Default: 1.0) - a number between 0and 1 that is multiplied with the instance count. This is the minimum number of healthy nodes that do not sacrifice overall application purpose. Marathon will make sure, during the upgrade process, that at any point of time this number of healthy instances are up.
+	MinimumHealthCapacity float64
+
+	// (Optional. Default: 1.0) - a number between 0 and 1 which is multiplied with the instance count. This is the maximum number of additional instances launched at any point of time during the upgrade process.
+	MaximumOverCapacity float64
+}
+
+// Health checks to be performed by marathon on running tasks to determine if they are operating as expected.
+type MarathonHealthCheck struct {
+	// Command to run in order to determine the health of a task.
+	Command *string
+
+	// (Optional. Default: 0): Index in this app's ports array to be used for health requests.
+	PortIndex *int32
+
+	// (Optional. Default: "/"): Path to endpoint exposed by the task that will provide health status.
+	Path *string
+
+	// (Optional. Default: 3) : Number of consecutive health check failures after which the unhealthy task should be killed.
+	MaxConsecutiveFailures *int32
+
+	//  (Optional. Default: "HTTP"): Protocol of the requests to be performed. One of "HTTP", "HTTPS", "TCP", or "Command".
+	Protocol string
+
+	// (Optional. Default: 15): Health check failures are ignored within this number of seconds of the task being started or until the task becomes healthy for the first time.
+	GracePeriodSeconds int32
+
+	// (Optional. Default: 10): Number of seconds to wait between health checks.
+	IntervalSeconds int32
+
+	// (Optional. Default: 20): Number of seconds after which a health check is considered a failure regardless of the response.
+	TimeoutSeconds int32
+}
+
+// Fetch will download URI before task starts
+type MarathonFetch struct {
+	// URI to be fetched by Mesos fetcher module
+	URI string
+
+	// Set fetched artifact as executable
+	Executable bool
+
+	// Extract fetched artifact if supported by Mesos fetcher mod
+	Extract bool
+
+	// Cache fetched artifact if supported by Mesos fetcher module
+	Cache bool
 }

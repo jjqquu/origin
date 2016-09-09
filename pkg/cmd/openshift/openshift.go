@@ -63,6 +63,8 @@ func CommandFor(basename string) *cobra.Command {
 		cmd = siteagent.NewCommandSiteAgent(basename)
 	case "openshift-deploy":
 		cmd = deployer.NewCommandDeployer(basename)
+	case "openshift-marathon-deploy":
+		cmd = deployer.NewCommandMarathonDeployer(basename)
 	case "openshift-recycle":
 		cmd = recycle.NewCommandRecycle(basename, out)
 	case "openshift-sti-build":

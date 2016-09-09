@@ -16,6 +16,7 @@ RUN ln -s /usr/bin/openshift /usr/bin/oc && \
     ln -s /usr/bin/openshift /usr/bin/origin && \
     ln -s /usr/bin/openshift /usr/bin/kubectl && \
     ln -s /usr/bin/openshift /usr/bin/openshift-deploy && \
+    ln -s /usr/bin/openshift /usr/bin/openshift-marathon-deploy && \
     ln -s /usr/bin/openshift /usr/bin/openshift-recycle && \
     ln -s /usr/bin/openshift /usr/bin/openshift-router && \
     ln -s /usr/bin/openshift /usr/bin/openshift-docker-build && \

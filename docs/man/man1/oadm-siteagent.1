@@ -1,0 +1,200 @@
+.TH "OADM" "1" " Openshift CLI User Manuals" "Openshift" "June 2016"  ""
+
+
+.SH NAME
+.PP
+oadm siteagent \- Install a site agent
+
+
+.SH SYNOPSIS
+.PP
+\fBoadm siteagent\fP [OPTIONS]
+
+
+.SH DESCRIPTION
+.PP
+Install or configure a site agent
+
+.PP
+This command helps to setup a site agent to talk to the cluster manager for the specified site where
+your application runs. With no arguments, the command will check for an existing site agent
+service called 'siteagent' and create one if it does not exist.
+
+.PP
+If a siteagent does not exist with the given name, this command will
+create a deployment configuration and service that will run the siteagent. If you are
+running your siteagent in production, you should pass \-\-replicas=2 or higher to ensure
+you have failover protection.
+
+
+.SH OPTIONS
+.PP
+\fB\-\-credentials\fP=""
+    Path to a .kubeconfig file that will contain the credentials the siteagent should use to contact the master.
+
+.PP
+\fB\-\-default\-cert\fP=""
+    Optional path to a certificate file that be used as the default certificate.  The file should contain the cert, key, and any CA certs necessary for the siteagent to serve the certificate.
+
+.PP
+\fB\-\-dry\-run\fP=false
+    If true, show the result of the operation without performing it.
+
+.PP
+\fB\-\-external\-host\-https\-vserver\fP=""
+    If the underlying siteagent implementation uses virtual servers, this is the name of the virtual server for HTTPS connections.
+
+.PP
+\fB\-\-external\-host\-insecure\fP=false
+    If the underlying siteagent implementation connects with an external host over a secure connection, this causes the siteagent to skip strict certificate verification with the external host.
+
+.PP
+\fB\-\-external\-host\-password\fP=""
+    If the underlying siteagent implementation connects with an external host, this is the password for authenticating with the external host.
+
+.PP
+\fB\-\-external\-host\-private\-key\fP=""
+    If the underlying siteagent implementation requires an SSH private key, this is the path to the private key file.
+
+.PP
+\fB\-\-external\-host\-username\fP=""
+    If the underlying siteagent implementation connects with an external host, this is the username for authenticating with the external host.
+
+.PP
+\fB\-\-images\fP="openshift/origin\-${component}:${version}"
+    The image to base this siteagent on \- ${component} will be replaced with \-\-type
+
+.PP
+\fB\-\-labels\fP="siteagent=default"
+    A set of labels to uniquely identify the siteagent and its components.
+
+.PP
+\fB\-\-latest\-images\fP=false
+    If true, attempt to use the latest images for the siteagent instead of the latest release.
+
+.PP
+\fB\-o\fP, \fB\-\-output\fP=""
+    Output results as yaml or json instead of executing, or use name for succint output (resource/name).
+
+.PP
+\fB\-\-output\-version\fP=""
+    The preferred API versions of the output objects
+
+.PP
+\fB\-\-ports\fP="80"
+    A comma delimited list of ports or port pairs to expose on the siteagent pod. Port pairs are applied to the service. The default is set for 80.
+
+.PP
+\fB\-\-replicas\fP=1
+    The replication factor of the siteagent; commonly 2 when high availability is desired.
+
+.PP
+\fB\-\-secrets\-as\-env\fP=false
+    Use environment variables for master secrets.
+
+.PP
+\fB\-\-selector\fP=""
+    Selector used to filter nodes on deployment. Used to run siteagents on a specific set of nodes.
+
+.PP
+\fB\-\-service\-account\fP="siteagent"
+    Name of the service account to use to run the siteagent pod.
+
+.PP
+\fB\-\-type\fP="mesos\-marathon"
+    The type of siteagent to use \- if you specify \-\-images this flag may be ignored.
+
+
+.SH OPTIONS INHERITED FROM PARENT COMMANDS
+.PP
+\fB\-\-api\-version\fP=""
+    DEPRECATED: The API version to use when talking to the server
+
+.PP
+\fB\-\-as\fP=""
+    Username to impersonate for the operation.
+
+.PP
+\fB\-\-certificate\-authority\fP=""
+    Path to a cert. file for the certificate authority.
+
+.PP
+\fB\-\-client\-certificate\fP=""
+    Path to a client certificate file for TLS.
+
+.PP
+\fB\-\-client\-key\fP=""
+    Path to a client key file for TLS.
+
+.PP
+\fB\-\-cluster\fP=""
+    The name of the kubeconfig cluster to use
+
+.PP
+\fB\-\-config\fP=""
+    Path to the config file to use for CLI requests.
+
+.PP
+\fB\-\-context\fP=""
+    The name of the kubeconfig context to use
+
+.PP
+\fB\-\-google\-json\-key\fP=""
+    The Google Cloud Platform Service Account JSON Key to use for authentication.
+
+.PP
+\fB\-\-insecure\-skip\-tls\-verify\fP=false
+    If true, the server's certificate will not be checked for validity. This will make your HTTPS connections insecure.
+
+.PP
+\fB\-\-log\-flush\-frequency\fP=0
+    Maximum number of seconds between log flushes
+
+.PP
+\fB\-\-match\-server\-version\fP=false
+    Require server version to match client version
+
+.PP
+\fB\-n\fP, \fB\-\-namespace\fP=""
+    If present, the namespace scope for this CLI request.
+
+.PP
+\fB\-\-server\fP=""
+    The address and port of the Kubernetes API server
+
+.PP
+\fB\-\-token\fP=""
+    Bearer token for authentication to the API server.
+
+.PP
+\fB\-\-user\fP=""
+    The name of the kubeconfig user to use
+
+
+.SH EXAMPLE
+.PP
+.RS
+
+.nf
+  # See what the siteagent would look like if created
+  $ oadm siteagent \-o json \-\-credentials=/path/to/openshift\-siteagent.kubeconfig \-\-service\-account=myserviceaccount
+
+  # Create a siteagent if it does not exist
+  $ oadm siteagent siteagent\-west \-\-credentials=/path/to/openshift\-siteagent.kubeconfig \-\-service\-account=myserviceaccount \-\-replicas=2
+
+  # Use a different siteagent image and see the siteagent configuration
+  $ oadm siteagent region\-west \-o yaml \-\-credentials=/path/to/openshift\-siteagent.kubeconfig \-\-service\-account=myserviceaccount \-\-images=myrepo/somesiteagent:mytag
+  
+
+.fi
+.RE
+
+
+.SH SEE ALSO
+.PP
+\fBoadm(1)\fP,
+
+
+.SH HISTORY
+.PP
+June 2016, Ported from the Kubernetes man\-doc generator

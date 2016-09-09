@@ -75,6 +75,7 @@ oc-adm-prune-images.1
 oc-adm-prune.1
 oc-adm-registry.1
 oc-adm-router.1
+oc-adm-siteagent.1
 oc-adm-taint.1
 oc-adm-top-images.1
 oc-adm-top-imagestreams.1
@@ -194,6 +195,7 @@ oc-set-route-backends.1
 oc-set-triggers.1
 oc-set-volumes.1
 oc-set.1
+oc-site.1
 oc-start-build.1
 oc-status.1
 oc-tag.1

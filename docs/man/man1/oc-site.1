@@ -1,0 +1,266 @@
+.TH "OC" "1" " Openshift CLI User Manuals" "Openshift" "June 2016"  ""
+
+
+.SH NAME
+.PP
+oc site \- view, add, modify or remove a project/app/task/deployment/marathon in the remote site.
+
+
+.SH SYNOPSIS
+.PP
+\fBoc site\fP [OPTIONS]
+
+
+.SH DESCRIPTION
+.PP
+This command help you to view, add, modify or remove a project/app/task/deployment/marathon in the remote site.
+  app
+    list                      \- list all apps in your current project
+    versions [id]             \- list all versions of apps of id
+    show [id]                 \- show config and status of app of id (latest version)
+    show [id] [version]       \- show config and status of app of id and version
+    create [jsonfile]         \- deploy application defined in jsonfile
+    update [jsonfile]         \- update application as defined in jsonfile
+    update [id] [jsonfile]    \- update application id as defined in jsonfile
+    update cpu [id] [cpu%]    \- update application id to have cpu% of cpu share
+    update memory [id] [MB]   \- update application id to have MB of memory
+    update instances [id] [N] \- update application id to have N instances
+    restart [id]              \- restart app of id
+    delete [id]               \- remove all instances of id
+
+.PP
+task
+    list [id]          \- list tasks of app of id
+    kill [id]          \- kill all tasks of app id
+    kill [id] [taskid] \- kill task taskid of app id
+    queue              \- list all queued tasks
+
+.PP
+project
+    list                          \- list all projects
+    list [projectid]              \- list groups in projectid
+    create [jsonfile]             \- create a project defined in jsonfile
+    update [projectid] [jsonfile] \- update project id as defined in jsonfile
+    delete [projectid]            \- delete project of projectid
+
+.PP
+deploy
+    list               \- list all active deploys
+    delete [deployid] \- cancel deployment of [deployid]
+
+.PP
+marathon
+    leader   \- get the current Marathon leader
+    abdicate \- force the current leader to relinquish control
+    ping     \- ping Marathon master host[s]
+
+.PP
+format
+    human  \- simplified columns, default
+    json   \- json on one line
+    jsonpp \- json pretty printed
+    raw    \- the exact response from Marathon
+
+
+.SH OPTIONS
+.PP
+\fB\-a\fP, \fB\-\-app\fP=""
+    Application
+
+.PP
+\fB\-\-apps\fP=false
+    Project
+
+.PP
+\fB\-\-cpu\fP=\-1
+    CPU percentage
+
+.PP
+\fB\-\-create\fP=false
+    Create deployment information of the specified site.
+
+.PP
+\fB\-\-delete\fP=false
+    Delete information from the specified site.
+
+.PP
+\fB\-d\fP, \fB\-\-deploy\fP=""
+    Deployment
+
+.PP
+\fB\-\-deploys\fP=false
+    Project
+
+.PP
+\fB\-f\fP, \fB\-\-file\fP=""
+    File name
+
+.PP
+\fB\-\-format\fP="human"
+    show information in what format (human/json/jsonpp/raw)
+
+.PP
+\fB\-\-kill\fP=false
+    Kill information from the specified site.
+
+.PP
+\fB\-\-list\fP=false
+    List all the object of projects/application/tasks/versions/deployment information for the specified site.
+
+.PP
+\fB\-\-mem\fP=\-1
+    Memory
+
+.PP
+\fB\-p\fP, \fB\-\-project\fP=false
+    Project
+
+.PP
+\fB\-\-projects\fP=false
+    Project
+
+.PP
+\fB\-\-replicas\fP=\-1
+    Replica number
+
+.PP
+\fB\-\-restart\fP=false
+    Restart information from the specified site.
+
+.PP
+\fB\-\-show\fP=false
+    Show the details information of the object of projects/application/tasks/versions/deployments the specified site.
+
+.PP
+\fB\-t\fP, \fB\-\-task\fP=""
+    Task
+
+.PP
+\fB\-\-tasks\fP=false
+    Project
+
+.PP
+\fB\-\-update\fP=false
+    Update deployment information of the specified site.
+
+.PP
+\fB\-v\fP, \fB\-\-version\fP=""
+    Version
+
+.PP
+\fB\-\-versions\fP=false
+    Project
+
+
+.SH OPTIONS INHERITED FROM PARENT COMMANDS
+.PP
+\fB\-\-api\-version\fP=""
+    DEPRECATED: The API version to use when talking to the server
+
+.PP
+\fB\-\-as\fP=""
+    Username to impersonate for the operation.
+
+.PP
+\fB\-\-certificate\-authority\fP=""
+    Path to a cert. file for the certificate authority.
+
+.PP
+\fB\-\-client\-certificate\fP=""
+    Path to a client certificate file for TLS.
+
+.PP
+\fB\-\-client\-key\fP=""
+    Path to a client key file for TLS.
+
+.PP
+\fB\-\-cluster\fP=""
+    The name of the kubeconfig cluster to use
+
+.PP
+\fB\-\-config\fP=""
+    Path to the config file to use for CLI requests.
+
+.PP
+\fB\-\-context\fP=""
+    The name of the kubeconfig context to use
+
+.PP
+\fB\-\-google\-json\-key\fP=""
+    The Google Cloud Platform Service Account JSON Key to use for authentication.
+
+.PP
+\fB\-\-insecure\-skip\-tls\-verify\fP=false
+    If true, the server's certificate will not be checked for validity. This will make your HTTPS connections insecure.
+
+.PP
+\fB\-\-log\-flush\-frequency\fP=0
+    Maximum number of seconds between log flushes
+
+.PP
+\fB\-\-match\-server\-version\fP=false
+    Require server version to match client version
+
+.PP
+\fB\-n\fP, \fB\-\-namespace\fP=""
+    If present, the namespace scope for this CLI request.
+
+.PP
+\fB\-\-server\fP=""
+    The address and port of the Kubernetes API server
+
+.PP
+\fB\-\-token\fP=""
+    Bearer token for authentication to the API server.
+
+.PP
+\fB\-\-user\fP=""
+    The name of the kubeconfig user to use
+
+
+.SH EXAMPLE
+.PP
+.RS
+
+.nf
+  # Get task information of specified site\_id/project\_id/application\_id/task\_id
+  $ oc site [site\_name] \-\-list \-\-apps 
+  $ oc site [site\_name] \-\-list \-\-apps \-\-format=json
+  $ oc site [site\_name] \-\-show \-\-app=[appid] 
+  $ oc site [site\_name] \-\-show \-\-app=[appid] \-\-format=json
+  $ oc site [site\_name] \-\-create \-\-app=[appid] \-\-file=[jsonfile]
+  $ oc site [site\_name] \-\-update \-\-app=[appid] \-\-file=[jsonfile]
+  $ oc site [site\_name] \-\-update \-\-app=[appid] \-\-cpu=[cpu]
+  $ oc site [site\_name] \-\-update \-\-app=[appid] \-\-mem=[MB]
+  $ oc site [site\_name] \-\-update \-\-app=[appid] \-\-replicas=[N]
+  $ oc site [site\_name] \-\-delete \-\-app=[appid]
+  $ oc site [site\_name] \-\-restart \-\-app=[appid]
+
+  $ oc site [site\_name] \-\-list \-\-app=[appid] \-\-versions 
+  $ oc site [site\_name] \-\-show \-\-app=[appid] \-\-version=[version] \-\-format=json
+
+  $ oc site [site\_name] \-\-list \-\-app=[appid] \-\-tasks 
+  $ oc site [site\_name] \-\-list \-\-app=[appid] \-\-tasks \-\-format=json
+  $ oc site [site\_name] \-\-kill \-\-app=[appid] \-\-task=[taskid1,taskid2] 
+
+  $ oc site [site\_name] \-\-list \-\-projects 
+  $ oc site [site\_name] \-\-list \-\-projects \-\-format=json
+  $ oc site [site\_name] \-\-delete \-\-project 
+
+  $ oc site [site\_name] \-\-list \-\-deploys 
+  $ oc site [site\_name] \-\-list \-\-deploys \-\-format=jsonpp
+  $ oc site [site\_name] \-\-delete \-\-deploy=[deployment id] 
+
+
+.fi
+.RE
+
+
+.SH SEE ALSO
+.PP
+\fBoc(1)\fP,
+
+
+.SH HISTORY
+.PP
+June 2016, Ported from the Kubernetes man\-doc generator

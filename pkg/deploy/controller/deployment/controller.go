@@ -59,6 +59,9 @@ type DeploymentController struct {
 
 	// deployerImage specifies which Docker image can support the default strategies.
 	deployerImage string
+	// marathonDeployerImage specifies which Docker image can support deployment to site of marathon
+	marathonDeployerImage string
+
 	// serviceAccount to create deployment pods with.
 	serviceAccount string
 	// environment is a set of environment variables which should be injected into all
@@ -289,6 +292,14 @@ func (c *DeploymentController) makeDeployerPod(deployment *kapi.ReplicationContr
 
 	gracePeriod := int64(10)
 
+	// Setting the node selector on the deployer pod so that it is created
+	// on the same set of nodes as the pods.
+	nodeSelector := deployment.Spec.Template.Spec.NodeSelector
+	if deploymentConfig.Spec.Strategy.Type == deployapi.DeploymentStrategyTypeMarathon {
+		// Setting the node selector as empty because we deploy it to remote site of mesos/marathon cluster
+		nodeSelector = make(map[string]string)
+	}
+
 	pod := &kapi.Pod{
 		ObjectMeta: kapi.ObjectMeta{
 			Name: deployutil.DeployerPodNameForDeployment(deployment.Name),
@@ -310,12 +321,10 @@ func (c *DeploymentController) makeDeployerPod(deployment *kapi.ReplicationContr
 					Resources: deploymentConfig.Spec.Strategy.Resources,
 				},
 			},
-			ActiveDeadlineSeconds: &maxDeploymentDurationSeconds,
-			DNSPolicy:             deployment.Spec.Template.Spec.DNSPolicy,
-			ImagePullSecrets:      deployment.Spec.Template.Spec.ImagePullSecrets,
-			// Setting the node selector on the deployer pod so that it is created
-			// on the same set of nodes as the pods.
-			NodeSelector:                  deployment.Spec.Template.Spec.NodeSelector,
+			ActiveDeadlineSeconds:         &maxDeploymentDurationSeconds,
+			DNSPolicy:                     deployment.Spec.Template.Spec.DNSPolicy,
+			ImagePullSecrets:              deployment.Spec.Template.Spec.ImagePullSecrets,
+			NodeSelector:                  nodeSelector,
 			RestartPolicy:                 kapi.RestartPolicyNever,
 			ServiceAccountName:            c.serviceAccount,
 			TerminationGracePeriodSeconds: &gracePeriod,
@@ -343,6 +352,11 @@ func (c *DeploymentController) makeDeployerPod(deployment *kapi.ReplicationContr
 //
 func (c *DeploymentController) makeDeployerContainer(strategy *deployapi.DeploymentStrategy) *kapi.Container {
 	image := c.deployerImage
+
+	if strategy.Type == deployapi.DeploymentStrategyTypeMarathon {
+		image = c.marathonDeployerImage
+	}
+
 	var environment []kapi.EnvVar
 	var command []string
 

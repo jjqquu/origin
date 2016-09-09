@@ -5,6 +5,7 @@ syntax = 'proto2';
 
 package github.com.openshift.origin.pkg.deploy.api.v1;
 
+import "github.com/openshift/origin/pkg/build/api/v1/generated.proto";
 import "k8s.io/kubernetes/pkg/api/unversioned/generated.proto";
 import "k8s.io/kubernetes/pkg/api/v1/generated.proto";
 import "k8s.io/kubernetes/pkg/apis/extensions/v1beta1/generated.proto";
@@ -137,6 +138,13 @@ message DeploymentConfigSpec {
   // Template is the object that describes the pod that will be created if
   // insufficient replicas are detected.
   optional k8s.io.kubernetes.pkg.api.v1.PodTemplateSpec template = 8;
+
+  // Site is the identifier that specifies the site where deployment will be conducted
+  optional string site = 10;
+
+  // MarathonAppTemplate is the object that describes the application that will be created
+  // by mesos Marathon scheduler
+  optional MarathonApplication marathonAppTemplate = 11;
 }
 
 // DeploymentConfigStatus represents the current deployment state.
@@ -315,6 +323,145 @@ message LifecycleHook {
 
   // TagImages instructs the deployer to tag the current image referenced under a container onto an image stream tag.
   repeated TagImageHook tagImages = 3;
+}
+
+message MarathonApplication {
+  optional string id = 1;
+
+  optional string cmd = 2;
+
+  repeated string args = 3;
+
+  repeated MarathonConstraint constraints = 4;
+
+  optional MarathonContainer container = 5;
+
+  optional double cpus = 6;
+
+  optional double disk = 7;
+
+  map<string, string> env = 8;
+
+  optional string executor = 9;
+
+  repeated MarathonHealthCheck healthChecks = 10;
+
+  optional double mem = 11;
+
+  repeated int32 ports = 12;
+
+  optional bool requirePorts = 13;
+
+  optional double backoffSeconds = 14;
+
+  optional double backoffFactor = 15;
+
+  optional double maxLaunchDelaySeconds = 16;
+
+  repeated string dependencies = 17;
+
+  optional string user = 18;
+
+  optional MarathonUpgradeStrategy upgradeStrategy = 19;
+
+  repeated string uris = 20;
+
+  map<string, string> labels = 21;
+
+  repeated string acceptedResourceRoles = 22;
+
+  repeated MarathonFetch fetch = 23;
+}
+
+// Application is the definition for an application in marathon
+message MarathonConstraint {
+  repeated string constraint = 1;
+}
+
+// Container is the definition for a container type in marathon
+message MarathonContainer {
+  optional string type = 1;
+
+  optional MarathonDocker docker = 2;
+
+  repeated MarathonVolume volumes = 3;
+}
+
+// Docker is the docker definition from a marathon application
+message MarathonDocker {
+  optional bool forcePullImage = 1;
+
+  optional string image = 2;
+
+  optional string network = 3;
+
+  repeated MarathonParameters parameters = 4;
+
+  repeated MarathonPortMapping portMappings = 5;
+
+  optional bool privileged = 6;
+}
+
+// Fetch will download URI before task starts
+message MarathonFetch {
+  optional string uri = 1;
+
+  optional bool Executable = 2;
+
+  optional bool extract = 3;
+
+  optional bool cache = 4;
+}
+
+message MarathonHealthCheck {
+  optional string command = 1;
+
+  optional int32 portIndex = 2;
+
+  optional string path = 3;
+
+  optional int32 maxConsecutiveFailures = 4;
+
+  optional string protocol = 5;
+
+  optional int32 gracePeriodSeconds = 6;
+
+  optional int32 intervalSeconds = 7;
+
+  optional int32 timeoutSeconds = 8;
+}
+
+// Parameters is the parameters to pass to the docker client when creating the container
+message MarathonParameters {
+  optional string key = 1;
+
+  optional string value = 2;
+}
+
+// PortMapping is the portmapping structure between container and mesos
+message MarathonPortMapping {
+  optional int32 containerPort = 1;
+
+  optional int32 hostPort = 2;
+
+  optional int32 servicePort = 3;
+
+  optional string protocol = 4;
+}
+
+message MarathonUpgradeStrategy {
+  optional double minimumHealthCapacity = 1;
+
+  optional double maximumOverCapacity = 2;
+}
+
+// Volume is the docker volume details associated to the container
+message MarathonVolume {
+  optional string containerPath = 1;
+
+  optional string hostPath = 2;
+
+  optional string mode = 3;
 }
 
 // RecreateDeploymentStrategyParams are the input to the Recreate deployment

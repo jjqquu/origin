@@ -106,6 +106,7 @@ image openshift/origin-egress-router         images/router/egress
 image openshift/origin-gitserver             examples/gitserver
 # images that depend on openshift/origin
 image openshift/origin-deployer              images/deployer
+image openshift/origin-marathon-deployer     images/marathon-deployer
 image openshift/origin-recycler              images/recycler
 image openshift/origin-docker-builder        images/builder/docker/docker-builder
 image openshift/origin-sti-builder           images/builder/docker/sti-builder

@@ -24,7 +24,7 @@ func addConversionFuncs(scheme *runtime.Scheme) {
 		panic(err)
 	}
 
-	if err := scheme.AddFieldLabelConversionFunc("v1", "Site",
+	if err = scheme.AddFieldLabelConversionFunc("v1", "Site",
 		oapi.GetFieldLabelConversionFunc(siteapi.SiteToSelectableFields(&siteapi.Site{}), nil),
 	); err != nil {
 		panic(err)

@@ -688,6 +688,26 @@ Install a router
 ====
 
 
+== oc adm siteagent
+Install a site agent
+
+====
+
+[options="nowrap"]
+----
+  # See what the siteagent would look like if created
+  $ oc adm siteagent -o json --credentials=/path/to/openshift-siteagent.kubeconfig --service-account=myserviceaccount
+
+  # Create a siteagent if it does not exist
+  $ oc adm siteagent siteagent-west --credentials=/path/to/openshift-siteagent.kubeconfig --service-account=myserviceaccount --replicas=2
+
+  # Use a different siteagent image and see the siteagent configuration
+  $ oc adm siteagent region-west -o yaml --credentials=/path/to/openshift-siteagent.kubeconfig --service-account=myserviceaccount --images=myrepo/somesiteagent:mytag
+  
+----
+====
+
+
 == oc adm taint
 Update the taints on one or more nodes
 
@@ -2529,6 +2549,45 @@ Update volumes on a pod template
   # Add new volume based on a more complex volume source (Git repo, AWS EBS, GCE PD,
   # Ceph, Gluster, NFS, ISCSI, ...)
   oc set volume dc/registry --add -m /repo --source=<json-string>
+----
+====
+
+
+== oc site
+view, add, modify or remove a project/app/task/deployment/marathon in the remote site.
+
+====
+
+[options="nowrap"]
+----
+  # Get task information of specified site_id/project_id/application_id/task_id
+  $ oc site [site_name] --list --apps 
+  $ oc site [site_name] --list --apps --format=json
+  $ oc site [site_name] --show --app=[appid] 
+  $ oc site [site_name] --show --app=[appid] --format=json
+  $ oc site [site_name] --create --app=[appid] --file=[jsonfile]
+  $ oc site [site_name] --update --app=[appid] --file=[jsonfile]
+  $ oc site [site_name] --update --app=[appid] --cpu=[cpu]
+  $ oc site [site_name] --update --app=[appid] --mem=[MB]
+  $ oc site [site_name] --update --app=[appid] --replicas=[N]
+  $ oc site [site_name] --delete --app=[appid]
+  $ oc site [site_name] --restart --app=[appid]
+
+  $ oc site [site_name] --list --app=[appid] --versions 
+  $ oc site [site_name] --show --app=[appid] --version=[version] --format=json
+
+  $ oc site [site_name] --list --app=[appid] --tasks 
+  $ oc site [site_name] --list --app=[appid] --tasks --format=json
+  $ oc site [site_name] --kill --app=[appid] --task=[taskid1,taskid2] 
+
+  $ oc site [site_name] --list --projects 
+  $ oc site [site_name] --list --projects --format=json
+  $ oc site [site_name] --delete --project 
+
+  $ oc site [site_name] --list --deploys 
+  $ oc site [site_name] --list --deploys --format=jsonpp
+  $ oc site [site_name] --delete --deploy=[deployment id] 
+
 ----
 ====
 

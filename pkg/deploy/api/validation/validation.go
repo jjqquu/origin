@@ -48,13 +48,20 @@ func ValidateDeploymentConfigSpec(spec deployapi.DeploymentConfigSpec) field.Err
 		allErrs = append(allErrs, field.Invalid(specPath.Child("minReadySeconds"), spec.MinReadySeconds,
 			fmt.Sprintf("must be less than the deployment timeout (%ds)", deployapi.DefaultRollingTimeoutSeconds)))
 	}
-	if spec.Template == nil {
-		allErrs = append(allErrs, field.Required(specPath.Child("template"), ""))
-	} else {
+	if spec.Template == nil && spec.MarathonAppTemplate == nil {
+		allErrs = append(allErrs, field.Invalid(specPath, spec, "template and marathonAppTemplate are both empty"))
+	}
+	if spec.Template != nil {
 		originalContainerImageNames := getContainerImageNames(spec.Template)
 		defer setContainerImageNames(spec.Template, originalContainerImageNames)
 		handleEmptyImageReferences(spec.Template, spec.Triggers)
 		allErrs = append(allErrs, validation.ValidatePodTemplateSpecForRC(spec.Template, spec.Selector, spec.Replicas, specPath.Child("template"))...)
+	}
+	if spec.Strategy.Type == deployapi.DeploymentStrategyTypeMarathon && spec.MarathonAppTemplate == nil {
+		allErrs = append(allErrs, field.Required(specPath.Child("marathonAppTemplate"), ""))
+	}
+	if spec.MarathonAppTemplate != nil {
+		allErrs = append(allErrs, validateMarathonApplicationTemplate(spec.MarathonAppTemplate, specPath.Child("marathonAppTemplate"))...)
 	}
 	if spec.Replicas < 0 {
 		allErrs = append(allErrs, field.Invalid(specPath.Child("replicas"), spec.Replicas, "replicas cannot be negative"))
@@ -192,6 +199,13 @@ func ValidateDeploymentConfigRollbackDeprecated(rollback *deployapi.DeploymentCo
 	return result
 }
 
+// ValidatePodTemplateSpec validates the spec of a pod template
+func validateMarathonApplicationTemplate(spec *deployapi.MarathonApplication, fldPath *field.Path) field.ErrorList {
+	allErrs := field.ErrorList{}
+	//TODO: we need to add validation on per field basis
+	return allErrs
+}
+
 func validateDeploymentStrategy(strategy *deployapi.DeploymentStrategy, pod *kapi.PodSpec, fldPath *field.Path) field.ErrorList {
 	errs := field.ErrorList{}
 
@@ -224,6 +238,7 @@ func validateDeploymentStrategy(strategy *deployapi.DeploymentStrategy, pod *kap
 		if strategy.RecreateParams != nil {
 			errs = append(errs, validateRecreateParams(strategy.RecreateParams, pod, fldPath.Child("recreateParams"))...)
 		}
+	case deployapi.DeploymentStrategyTypeMarathon:
 	case "":
 		errs = append(errs, field.Required(fldPath.Child("type"), "strategy type is required"))
 	default:

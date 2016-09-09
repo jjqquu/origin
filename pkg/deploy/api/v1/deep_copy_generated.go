@@ -31,6 +31,16 @@ func init() {
 		DeepCopy_v1_DeploymentTriggerPolicy,
 		DeepCopy_v1_ExecNewPodHook,
 		DeepCopy_v1_LifecycleHook,
+		DeepCopy_v1_MarathonApplication,
+		DeepCopy_v1_MarathonConstraint,
+		DeepCopy_v1_MarathonContainer,
+		DeepCopy_v1_MarathonDocker,
+		DeepCopy_v1_MarathonFetch,
+		DeepCopy_v1_MarathonHealthCheck,
+		DeepCopy_v1_MarathonParameters,
+		DeepCopy_v1_MarathonPortMapping,
+		DeepCopy_v1_MarathonUpgradeStrategy,
+		DeepCopy_v1_MarathonVolume,
 		DeepCopy_v1_RecreateDeploymentStrategyParams,
 		DeepCopy_v1_RollingDeploymentStrategyParams,
 		DeepCopy_v1_TagImageHook,
@@ -196,6 +206,16 @@ func DeepCopy_v1_DeploymentConfigSpec(in DeploymentConfigSpec, out *DeploymentCo
 		}
 	} else {
 		out.Template = nil
+	}
+	out.Site = in.Site
+	if in.MarathonAppTemplate != nil {
+		in, out := in.MarathonAppTemplate, &out.MarathonAppTemplate
+		*out = new(MarathonApplication)
+		if err := DeepCopy_v1_MarathonApplication(*in, *out, c); err != nil {
+			return err
+		}
+	} else {
+		out.MarathonAppTemplate = nil
 	}
 	return nil
 }
@@ -426,6 +446,328 @@ func DeepCopy_v1_LifecycleHook(in LifecycleHook, out *LifecycleHook, c *conversi
 	} else {
 		out.TagImages = nil
 	}
+	return nil
+}
+
+func DeepCopy_v1_MarathonApplication(in MarathonApplication, out *MarathonApplication, c *conversion.Cloner) error {
+	out.ID = in.ID
+	if in.Cmd != nil {
+		in, out := in.Cmd, &out.Cmd
+		*out = new(string)
+		**out = *in
+	} else {
+		out.Cmd = nil
+	}
+	if in.Args != nil {
+		in, out := in.Args, &out.Args
+		*out = make([]string, len(in))
+		copy(*out, in)
+	} else {
+		out.Args = nil
+	}
+	if in.Constraints != nil {
+		in, out := in.Constraints, &out.Constraints
+		*out = make([]MarathonConstraint, len(in))
+		for i := range in {
+			if err := DeepCopy_v1_MarathonConstraint(in[i], &(*out)[i], c); err != nil {
+				return err
+			}
+		}
+	} else {
+		out.Constraints = nil
+	}
+	if in.Container != nil {
+		in, out := in.Container, &out.Container
+		*out = new(MarathonContainer)
+		if err := DeepCopy_v1_MarathonContainer(*in, *out, c); err != nil {
+			return err
+		}
+	} else {
+		out.Container = nil
+	}
+	if in.CPUs != nil {
+		in, out := in.CPUs, &out.CPUs
+		*out = new(float64)
+		**out = *in
+	} else {
+		out.CPUs = nil
+	}
+	if in.Disk != nil {
+		in, out := in.Disk, &out.Disk
+		*out = new(float64)
+		**out = *in
+	} else {
+		out.Disk = nil
+	}
+	if in.Env != nil {
+		in, out := in.Env, &out.Env
+		*out = make(map[string]string)
+		for key, val := range in {
+			(*out)[key] = val
+		}
+	} else {
+		out.Env = nil
+	}
+	if in.Executor != nil {
+		in, out := in.Executor, &out.Executor
+		*out = new(string)
+		**out = *in
+	} else {
+		out.Executor = nil
+	}
+	if in.HealthChecks != nil {
+		in, out := in.HealthChecks, &out.HealthChecks
+		*out = make([]MarathonHealthCheck, len(in))
+		for i := range in {
+			if err := DeepCopy_v1_MarathonHealthCheck(in[i], &(*out)[i], c); err != nil {
+				return err
+			}
+		}
+	} else {
+		out.HealthChecks = nil
+	}
+	if in.Mem != nil {
+		in, out := in.Mem, &out.Mem
+		*out = new(float64)
+		**out = *in
+	} else {
+		out.Mem = nil
+	}
+	if in.Ports != nil {
+		in, out := in.Ports, &out.Ports
+		*out = make([]int32, len(in))
+		copy(*out, in)
+	} else {
+		out.Ports = nil
+	}
+	if in.RequirePorts != nil {
+		in, out := in.RequirePorts, &out.RequirePorts
+		*out = new(bool)
+		**out = *in
+	} else {
+		out.RequirePorts = nil
+	}
+	if in.BackoffSeconds != nil {
+		in, out := in.BackoffSeconds, &out.BackoffSeconds
+		*out = new(float64)
+		**out = *in
+	} else {
+		out.BackoffSeconds = nil
+	}
+	if in.BackoffFactor != nil {
+		in, out := in.BackoffFactor, &out.BackoffFactor
+		*out = new(float64)
+		**out = *in
+	} else {
+		out.BackoffFactor = nil
+	}
+	if in.MaxLaunchDelaySeconds != nil {
+		in, out := in.MaxLaunchDelaySeconds, &out.MaxLaunchDelaySeconds
+		*out = new(float64)
+		**out = *in
+	} else {
+		out.MaxLaunchDelaySeconds = nil
+	}
+	if in.Dependencies != nil {
+		in, out := in.Dependencies, &out.Dependencies
+		*out = make([]string, len(in))
+		copy(*out, in)
+	} else {
+		out.Dependencies = nil
+	}
+	out.User = in.User
+	if in.UpgradeStrategy != nil {
+		in, out := in.UpgradeStrategy, &out.UpgradeStrategy
+		*out = new(MarathonUpgradeStrategy)
+		if err := DeepCopy_v1_MarathonUpgradeStrategy(*in, *out, c); err != nil {
+			return err
+		}
+	} else {
+		out.UpgradeStrategy = nil
+	}
+	if in.Uris != nil {
+		in, out := in.Uris, &out.Uris
+		*out = make([]string, len(in))
+		copy(*out, in)
+	} else {
+		out.Uris = nil
+	}
+	if in.Labels != nil {
+		in, out := in.Labels, &out.Labels
+		*out = make(map[string]string)
+		for key, val := range in {
+			(*out)[key] = val
+		}
+	} else {
+		out.Labels = nil
+	}
+	if in.AcceptedResourceRoles != nil {
+		in, out := in.AcceptedResourceRoles, &out.AcceptedResourceRoles
+		*out = make([]string, len(in))
+		copy(*out, in)
+	} else {
+		out.AcceptedResourceRoles = nil
+	}
+	if in.Fetch != nil {
+		in, out := in.Fetch, &out.Fetch
+		*out = make([]MarathonFetch, len(in))
+		for i := range in {
+			if err := DeepCopy_v1_MarathonFetch(in[i], &(*out)[i], c); err != nil {
+				return err
+			}
+		}
+	} else {
+		out.Fetch = nil
+	}
+	return nil
+}
+
+func DeepCopy_v1_MarathonConstraint(in MarathonConstraint, out *MarathonConstraint, c *conversion.Cloner) error {
+	if in.Constraint != nil {
+		in, out := in.Constraint, &out.Constraint
+		*out = make([]string, len(in))
+		copy(*out, in)
+	} else {
+		out.Constraint = nil
+	}
+	return nil
+}
+
+func DeepCopy_v1_MarathonContainer(in MarathonContainer, out *MarathonContainer, c *conversion.Cloner) error {
+	out.Type = in.Type
+	if in.Docker != nil {
+		in, out := in.Docker, &out.Docker
+		*out = new(MarathonDocker)
+		if err := DeepCopy_v1_MarathonDocker(*in, *out, c); err != nil {
+			return err
+		}
+	} else {
+		out.Docker = nil
+	}
+	if in.Volumes != nil {
+		in, out := in.Volumes, &out.Volumes
+		*out = make([]MarathonVolume, len(in))
+		for i := range in {
+			if err := DeepCopy_v1_MarathonVolume(in[i], &(*out)[i], c); err != nil {
+				return err
+			}
+		}
+	} else {
+		out.Volumes = nil
+	}
+	return nil
+}
+
+func DeepCopy_v1_MarathonDocker(in MarathonDocker, out *MarathonDocker, c *conversion.Cloner) error {
+	if in.ForcePullImage != nil {
+		in, out := in.ForcePullImage, &out.ForcePullImage
+		*out = new(bool)
+		**out = *in
+	} else {
+		out.ForcePullImage = nil
+	}
+	out.Image = in.Image
+	out.Network = in.Network
+	if in.Parameters != nil {
+		in, out := in.Parameters, &out.Parameters
+		*out = make([]MarathonParameters, len(in))
+		for i := range in {
+			if err := DeepCopy_v1_MarathonParameters(in[i], &(*out)[i], c); err != nil {
+				return err
+			}
+		}
+	} else {
+		out.Parameters = nil
+	}
+	if in.PortMappings != nil {
+		in, out := in.PortMappings, &out.PortMappings
+		*out = make([]MarathonPortMapping, len(in))
+		for i := range in {
+			if err := DeepCopy_v1_MarathonPortMapping(in[i], &(*out)[i], c); err != nil {
+				return err
+			}
+		}
+	} else {
+		out.PortMappings = nil
+	}
+	if in.Privileged != nil {
+		in, out := in.Privileged, &out.Privileged
+		*out = new(bool)
+		**out = *in
+	} else {
+		out.Privileged = nil
+	}
+	return nil
+}
+
+func DeepCopy_v1_MarathonFetch(in MarathonFetch, out *MarathonFetch, c *conversion.Cloner) error {
+	out.URI = in.URI
+	out.Executable = in.Executable
+	out.Extract = in.Extract
+	out.Cache = in.Cache
+	return nil
+}
+
+func DeepCopy_v1_MarathonHealthCheck(in MarathonHealthCheck, out *MarathonHealthCheck, c *conversion.Cloner) error {
+	if in.Command != nil {
+		in, out := in.Command, &out.Command
+		*out = new(string)
+		**out = *in
+	} else {
+		out.Command = nil
+	}
+	if in.PortIndex != nil {
+		in, out := in.PortIndex, &out.PortIndex
+		*out = new(int32)
+		**out = *in
+	} else {
+		out.PortIndex = nil
+	}
+	if in.Path != nil {
+		in, out := in.Path, &out.Path
+		*out = new(string)
+		**out = *in
+	} else {
+		out.Path = nil
+	}
+	if in.MaxConsecutiveFailures != nil {
+		in, out := in.MaxConsecutiveFailures, &out.MaxConsecutiveFailures
+		*out = new(int32)
+		**out = *in
+	} else {
+		out.MaxConsecutiveFailures = nil
+	}
+	out.Protocol = in.Protocol
+	out.GracePeriodSeconds = in.GracePeriodSeconds
+	out.IntervalSeconds = in.IntervalSeconds
+	out.TimeoutSeconds = in.TimeoutSeconds
+	return nil
+}
+
+func DeepCopy_v1_MarathonParameters(in MarathonParameters, out *MarathonParameters, c *conversion.Cloner) error {
+	out.Key = in.Key
+	out.Value = in.Value
+	return nil
+}
+
+func DeepCopy_v1_MarathonPortMapping(in MarathonPortMapping, out *MarathonPortMapping, c *conversion.Cloner) error {
+	out.ContainerPort = in.ContainerPort
+	out.HostPort = in.HostPort
+	out.ServicePort = in.ServicePort
+	out.Protocol = in.Protocol
+	return nil
+}
+
+func DeepCopy_v1_MarathonUpgradeStrategy(in MarathonUpgradeStrategy, out *MarathonUpgradeStrategy, c *conversion.Cloner) error {
+	out.MinimumHealthCapacity = in.MinimumHealthCapacity
+	out.MaximumOverCapacity = in.MaximumOverCapacity
+	return nil
+}
+
+func DeepCopy_v1_MarathonVolume(in MarathonVolume, out *MarathonVolume, c *conversion.Cloner) error {
+	out.ContainerPath = in.ContainerPath
+	out.HostPath = in.HostPath
+	out.Mode = in.Mode
 	return nil
 }
 

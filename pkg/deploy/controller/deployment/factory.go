@@ -27,7 +27,7 @@ const (
 )
 
 // NewDeploymentController creates a new DeploymentController.
-func NewDeploymentController(rcInformer, podInformer framework.SharedIndexInformer, kc kclient.Interface, sa, image string, env []kapi.EnvVar, codec runtime.Codec) *DeploymentController {
+func NewDeploymentController(rcInformer, podInformer framework.SharedIndexInformer, kc kclient.Interface, sa, image, marathonImage string, env []kapi.EnvVar, codec runtime.Codec) *DeploymentController {
 	eventBroadcaster := record.NewBroadcaster()
 	eventBroadcaster.StartRecordingToSink(kc.Events(""))
 	recorder := eventBroadcaster.NewRecorder(kapi.EventSource{Component: "deployments-controller"})
@@ -38,11 +38,12 @@ func NewDeploymentController(rcInformer, podInformer framework.SharedIndexInform
 
 		queue: workqueue.NewRateLimitingQueue(workqueue.DefaultControllerRateLimiter()),
 
-		serviceAccount: sa,
-		deployerImage:  image,
-		environment:    env,
-		recorder:       recorder,
-		codec:          codec,
+		serviceAccount:        sa,
+		deployerImage:         image,
+		marathonDeployerImage: marathonImage,
+		environment:           env,
+		recorder:              recorder,
+		codec:                 codec,
 	}
 
 	c.rcStore.Indexer = rcInformer.GetIndexer()

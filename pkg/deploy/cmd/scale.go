@@ -9,6 +9,7 @@ import (
 	"k8s.io/kubernetes/pkg/util/wait"
 
 	"github.com/openshift/origin/pkg/client"
+	"github.com/openshift/origin/pkg/deploy/api"
 	"github.com/openshift/origin/pkg/deploy/util"
 )
 
@@ -49,6 +50,9 @@ func (scaler *DeploymentConfigScaler) Scale(namespace, name string, newSize uint
 		rc, err := scaler.rcClient.ReplicationControllers(namespace).Get(util.LatestDeploymentNameForConfig(dc))
 		if err != nil {
 			return err
+		}
+		if dc.Spec.MarathonAppTemplate != nil {
+			return wait.Poll(waitForReplicas.Interval, waitForReplicas.Timeout, controllerHasSpecifiedReplicasForMarathonDeployment(scaler, namespace, name, newSize))
 		}
 		return wait.Poll(waitForReplicas.Interval, waitForReplicas.Timeout, controllerHasSpecifiedReplicas(scaler.clientInterface, rc, dc.Spec.Replicas))
 	}
@@ -92,5 +96,21 @@ func controllerHasSpecifiedReplicas(c kclient.Interface, controller *kapi.Replic
 		// This will not be an issue once we've implemented graceful delete for rcs, but till then
 		// concurrent stop operations on the same rc might have unintended side effects.
 		return ctrl.Status.ObservedGeneration >= desiredGeneration && ctrl.Status.Replicas == specifiedReplicas, nil
+	}
+}
+
+func controllerHasSpecifiedReplicasForMarathonDeployment(scaler *DeploymentConfigScaler, namespace, name string, newSize uint) wait.ConditionFunc {
+	return func() (bool, error) {
+		dc, err := scaler.dcClient.DeploymentConfigs(namespace).Get(name)
+		if err != nil {
+			return false, err
+		}
+		ctrl, err := scaler.rcClient.ReplicationControllers(namespace).Get(util.LatestDeploymentNameForConfig(dc))
+		if err != nil {
+			return false, err
+		}
+		replicas, hasReplicas := util.DeploymentReplicas(ctrl)
+		deployStatus := util.DeploymentStatusFor(ctrl)
+		return deployStatus == api.DeploymentStatusComplete && hasReplicas && replicas == dc.Spec.Replicas && replicas == int32(newSize), nil
 	}
 }

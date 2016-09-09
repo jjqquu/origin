@@ -331,6 +331,7 @@ func (c *MasterConfig) RunDeploymentController() {
 		kclient,
 		bootstrappolicy.DeployerServiceAccountName,
 		c.ImageFor("deployer"),
+		c.ImageFor("marathon-deployer"),
 		env,
 		c.EtcdHelper.Codec(),
 	)
