@@ -23,6 +23,7 @@ import (
 	"github.com/openshift/origin/pkg/cmd/cli/cmd/rollout"
 	"github.com/openshift/origin/pkg/cmd/cli/cmd/rsync"
 	"github.com/openshift/origin/pkg/cmd/cli/cmd/set"
+	"github.com/openshift/origin/pkg/cmd/cli/cmd/site"
 	"github.com/openshift/origin/pkg/cmd/cli/policy"
 	"github.com/openshift/origin/pkg/cmd/cli/sa"
 	"github.com/openshift/origin/pkg/cmd/cli/secrets"
@@ -149,6 +150,7 @@ func NewCommandCLI(name, fullName string, in io.Reader, out, errout io.Writer) *
 				cmd.NewCmdProxy(fullName, f, out),
 				cmd.NewCmdAttach(fullName, f, in, out, errout),
 				cmd.NewCmdRun(fullName, f, in, out, errout),
+				site.NewCmdSite(site.SiteRecommendedCommandName, fullName+" "+site.SiteRecommendedCommandName, f),
 			},
 		},
 		{
